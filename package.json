@@ -1,0 +1,15 @@
+{
+  "name": "APIGateway",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "API Gateway for the ResidentMe application",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "kafkajs": "^2.2.4"
+  }
+}
