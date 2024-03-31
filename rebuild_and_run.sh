@@ -1,13 +1,16 @@
 #!/bin/bash
 
-# Name of your Docker image
+# Name of Docker image
 IMAGE_NAME="apigateway"
 
-# Name of your Docker container
+# Name of Docker container
 CONTAINER_NAME="apigateway"
 
 # Port mapping (host:container)
 PORT_MAPPING="3000:3000"
+
+# Path to .env file
+ENV_FILE_PATH="./.env"
 
 # Stop the currently running container
 echo "Stopping existing container..."
@@ -23,4 +26,4 @@ docker build -t $IMAGE_NAME . --no-cache
 
 # Run a new container from the rebuilt image
 echo "Running new container..."
-docker run --name $CONTAINER_NAME -p $PORT_MAPPING $IMAGE_NAME
+docker run --name $CONTAINER_NAME -p $PORT_MAPPING --env-file $ENV_FILE_PATH $IMAGE_NAME

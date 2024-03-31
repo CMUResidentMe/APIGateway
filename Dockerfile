@@ -17,8 +17,5 @@ COPY . .
 # Make port available to the world outside this container
 EXPOSE 3000
 
-# Define environment variable
-ENV KAFKA_BROKER_LIST kafka-broker:9092
-
 # Run app when the container launches
 CMD ["npm", "start"]
