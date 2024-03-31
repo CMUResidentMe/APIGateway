@@ -9,8 +9,15 @@ services:
     image: 'bitnami/kafka:latest'
     environment:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:SASL_PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL=PLAIN
+      - KAFKA_CFG_SASL_ENABLED_MECHANISMS=PLAIN
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      - KAFKA_CLIENT_USER=apigateway
+      - KAFKA_CLIENT_PASSWORD=apigateway
+    ports:
+      - '9092:9092'
     depends_on:
       - zookeeper
 
@@ -18,8 +25,9 @@ services:
     build: .
     ports:
       - "3000:3000"
-    environment:
-      - KAFKA_BROKER_LIST=kafka:9092
     depends_on:
       - kafka
     command: npm start
+    env_file:
+      - .env
+
