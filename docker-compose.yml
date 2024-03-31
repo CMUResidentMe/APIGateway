@@ -1,33 +1,40 @@
 version: '3'
 services:
-  zookeeper:
-    image: 'bitnami/zookeeper:latest'
+  api_gateway:
+    build: ./api_gateway
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-
-  kafka:
-    image: 'bitnami/kafka:latest'
-    environment:
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:SASL_PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      - KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL=PLAIN
-      - KAFKA_CFG_SASL_ENABLED_MECHANISMS=PLAIN
-      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-      - KAFKA_CLIENT_USER=apigateway
-      - KAFKA_CLIENT_PASSWORD=apigateway
+      - PORT=8000
     ports:
-      - '9092:9092'
+      - "80:8000"
     depends_on:
-      - zookeeper
+      - user_service
+      - booking_service
+      - commBoard_service
+      - marketPlace_service
+      - workOrder_service
+      - notification_service
+    #healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+  
+  user_service:
+    build: ./user_service
+    # No ports exposed to the host, only accessible within the Docker network
+  
+  booking_service:
+    build: ./booking_service
+  
+  commBoard_service:
+    build: ./commBoard_service
 
-  apigateway: #denotes the service name that Docker Compose will use when creating containers
-    build: .
-    ports:
-      - "3000:3000"
-    depends_on:
-      - kafka
-    command: npm start
-    env_file:
-      - .env
+  marketPlace_service:
+    build: ./marketPlace_service
+
+  workOrder_service:
+    build: ./workOrder_service
+
+  notification_service:
+    build: ./notification_service
 
