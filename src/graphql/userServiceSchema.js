@@ -20,6 +20,5 @@ export const typeDefs = gql`
   type AuthResponse {
     token: String
     privilege: String
-    error: String
   }
 `;

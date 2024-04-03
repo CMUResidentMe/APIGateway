@@ -1,4 +1,5 @@
 import { gql, request } from 'graphql-request';
+import { ApolloError } from 'apollo-server-express';
 
 const REGISTER_MUTATION = gql`
   mutation Register($username: String!, $password: String!, $firstName: String!, $lastName: String!, $roomNumber: Int!) {
@@ -33,20 +34,25 @@ export const resolvers = {
           return data.register;
         } catch (error) {
           console.error("Error in register resolver:", error);
-          console.error("Detailed error:", error.response?.errors || error.message);
-          return "Registration failed"; 
+          const errorMessage = error.response?.errors?.[0]?.message || 'An unexpected error occurred during registration.';
+          throw new ApolloError(errorMessage, "REGISTRATION_FAILED");
         }        
       },
       login: async (_, { username, password }) => {
         try {
-          const data = await request(userServiceURL, LOGIN_MUTATION, {
+          const data = await request(process.env.USER_SERVICE_URL, LOGIN_MUTATION, {
             username,
             password,
           });
-          return { token: data.login.token, privilege: data.login.privilege, error: null };
+          console.log("data: " + JSON.stringify(data));
+          return {token: data.login.token, privilege: data.login.privilege};
         } catch (error) {
-          const message = error.response?.errors?.[0]?.message || 'An unexpected error occurred';
-          return { token: null, privilege: null, error: message };
+          // console.error("Error in login resolver:", error);
+          // const message = error.response?.errors?.[0]?.message || 'An unexpected error occurred during login.';
+          // return { token: null, privilege: null, error: message };
+          console.error("Error in login resolver:", error);
+          const message = error.response?.errors?.[0]?.message || 'An unexpected error occurred during login.';
+          throw new ApolloError(message, "LOGIN_FAILED");
         }
       },
     },

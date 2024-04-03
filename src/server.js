@@ -28,6 +28,9 @@ async function startServer() {
     typeDefs,
     resolvers,
     context: ({ req }) => ({ req }),
+    formatError: (error) => {
+      return { message: error.message };
+    },
   });
 
   await apolloServer.start();
