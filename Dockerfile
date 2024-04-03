@@ -1,21 +1,14 @@
 # Use an official Node runtime as a parent image
-FROM node:14
+FROM node:20
 
-# Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /usr/src/application
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
-# Install any needed packages specified in package.json
 RUN npm install
 
-# Copy the rest of your application's source code from your host to your image's filesystem.
 COPY . .
 
-# Make port available to the world outside this container
-EXPOSE 3000
+EXPOSE 8000
 
-# Run app when the container launches
 CMD ["npm", "start"]

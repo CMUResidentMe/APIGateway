@@ -4,37 +4,39 @@ services:
     build: ./api_gateway
     environment:
       - PORT=8000
+      - USER_SERVICE_URL=http://host.docker.internal:4000/graphql
     ports:
-      - "80:8000"
-    depends_on:
-      - user_service
-      - booking_service
-      - commBoard_service
-      - marketPlace_service
-      - workOrder_service
-      - notification_service
+      - "8000:8000"
+    # depends_on:
+      # - user_service
+      # - booking_service
+      # - commBoard_service
+      # - marketPlace_service
+      # - workOrder_service
+      # - notification_service
     #healthcheck:
     #   test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
     #   interval: 30s
     #   timeout: 10s
     #   retries: 5
   
-  user_service:
-    build: ./user_service
-    # No ports exposed to the host, only accessible within the Docker network
+  # user_service:
+  #   build: ./user_service
+  #   ports:
+  #     - "4000:4000"
   
-  booking_service:
-    build: ./booking_service
+  # booking_service:
+  #   build: ./booking_service
   
-  commBoard_service:
-    build: ./commBoard_service
+  # commBoard_service:
+  #   build: ./commBoard_service
 
-  marketPlace_service:
-    build: ./marketPlace_service
+  # marketPlace_service:
+  #   build: ./marketPlace_service
 
-  workOrder_service:
-    build: ./workOrder_service
+  # workOrder_service:
+  #   build: ./workOrder_service
 
-  notification_service:
-    build: ./notification_service
+  # notification_service:
+  #   build: ./notification_service
 
