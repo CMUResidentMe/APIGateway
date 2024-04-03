@@ -2,11 +2,10 @@ import { gql, request } from 'graphql-request';
 
 const REGISTER_MUTATION = gql`
   mutation Register($username: String!, $password: String!, $firstName: String!, $lastName: String!, $roomNumber: Int!) {
-    register(username: $username, password: $password, firstName: $firstName, lastName: $lastName, roomNumber: $roomNumber) {
-      message
-    }
+    register(username: $username, password: $password, firstName: $firstName, lastName: $lastName, roomNumber: $roomNumber)
   }
 `;
+
 
 const LOGIN_MUTATION = gql`
   mutation Login($username: String!, $password: String!) {
@@ -31,11 +30,12 @@ export const resolvers = {
             lastName,
             roomNumber,
           });
-          return { message: data.register.message, error: null };
+          return data.register;
         } catch (error) {
-          const message = error.response?.errors?.[0]?.message || 'An unexpected error occurred';
-          return { message: null, error: message };
-        }
+          console.error("Error in register resolver:", error);
+          console.error("Detailed error:", error.response?.errors || error.message);
+          return "Registration failed"; 
+        }        
       },
       login: async (_, { username, password }) => {
         try {
