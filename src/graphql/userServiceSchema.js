@@ -7,9 +7,10 @@ export const typeDefs = gql`
   }
 
   type Mutation {
-    register(username: String!, password: String!, firstName: String!, lastName: String!, roomNumber: Int!): UserResponse
+    register(username: String!, password: String!, firstName: String!, lastName: String!, roomNumber: Int!): String
     login(username: String!, password: String!): AuthResponse
   }
+  
 
   type UserResponse {
     message: String
@@ -19,6 +20,5 @@ export const typeDefs = gql`
   type AuthResponse {
     token: String
     privilege: String
-    error: String
   }
 `;
