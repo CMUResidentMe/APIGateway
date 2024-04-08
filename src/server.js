@@ -1,47 +1,36 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
-import { config } from 'dotenv';
 import { ApolloServer } from 'apollo-server-express';
-import { typeDefs } from './graphql/userServiceSchema.js';
-import { resolvers } from './graphql/userServiceResolvers.js';
-import morgan from 'morgan';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
+import { workOrdeTypeDefs } from './graphql/workorderSchema.js';
+import { workOrderResolvers } from './graphql/workorderResolvers.js';
+import { userTypeDefs } from './graphql/userServiceSchema.js';
+import { userResolvers } from './graphql/userServiceResolvers.js';
 
-config();
+const startServer = async () => {
 
-const app = express();
-const port = process.env.PORT || 8000;
-
-app.use(express.json());
-app.use(morgan('dev'));
-app.use(cors());
-app.use(helmet());
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
-});
-app.use(limiter);
-
-async function startServer() {
-  const apolloServer = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context: ({ req }) => ({ req }),
-    formatError: (error) => {
-      return { message: error.message };
+  const app = express();
+  const server = new ApolloServer({
+    typeDefs: [workOrdeTypeDefs, userTypeDefs],
+    resolvers: [workOrderResolvers, userResolvers], 
+    context: ({ req }) => {
+      // To find out the correct arguments for a specific integration,
+      // see https://www.apollographql.com/docs/apollo-server/api/apollo-server/#middleware-specific-context-fields
+      // Get the user token from the headers.
+      const token = req.headers.authorization || 'Lily';
+      // Try to retrieve a user with the token
+      //const user = getUser(token);
+      return { user: token };
     },
   });
-
-  await apolloServer.start();
-  apolloServer.applyMiddleware({ app, path: '/graphql' });
-
-  app.listen(port, () => {
-    console.log(`API Gateway listening on port ${port}`);
-    console.log(`GraphQL ready at http://localhost:${port}${apolloServer.graphqlPath}`);
+  // Make sure to start Apollo Server before applying middleware
+  await server.start();
+  server.applyMiddleware({ app });
+  const PORT = process.env.PORT || 2009;
+  app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}${server.graphqlPath}`);
   });
-}
+};
 
 startServer();
-
-

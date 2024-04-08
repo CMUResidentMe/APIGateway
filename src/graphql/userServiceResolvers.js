@@ -17,7 +17,7 @@ const LOGIN_MUTATION = gql`
   }
 `;
 
-export const resolvers = {
+export const userResolvers = {
     Query: {
         _empty: () => '',
       },
