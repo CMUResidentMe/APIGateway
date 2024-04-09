@@ -13,7 +13,8 @@ export const workOrderResolvers = {
   
   Mutation: {
     buildWorkOrder: async (parent, args, contextValue, info) => {
-      return await workOrderController.buildWorkOrder(args);
+      const user = contextValue.user;
+      return await workOrderController.buildWorkOrder(args, user);
     },
     changeWorkOrder: async (parent, args, contextValue, info) => {
       return await workOrderController.changeWorkOrder(args);

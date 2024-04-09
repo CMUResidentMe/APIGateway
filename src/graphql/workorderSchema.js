@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express';
 
 export const workOrdeTypeDefs = gql`
   enum WorkStatus {
-    CREATED
+    OPEN
     ASSIGNED
     ONGOING
     FINISHED
@@ -11,7 +11,7 @@ export const workOrdeTypeDefs = gql`
   enum EntryPermission{
     CALLCONFIRM
     KNOCKDOOR
-    YES
+    ALL_PERMISSIONS
   }
 
   type WorkOrder{

@@ -58,7 +58,7 @@ class WorkOrderController {
     }
   }
 
-  async buildWorkOrder(workOrderContent) {
+  async buildWorkOrder(workOrderContent, user) {
     try {
       const mutation = gql`
         mutation buildWorkOrder($owner: String!, $workType: String!, $priority: Int!, $detail: String, $preferredtime: String!, $entryPermission: EntryPermission, $accessInstruction: String) {
@@ -75,6 +75,7 @@ class WorkOrderController {
           }
         }
       `;
+      workOrderContent.owner = user;
       let wk = await this.clientMutition.requestConfig(mutation, workOrderContent);
       return wk.buildWorkOrder;
     } catch (error) {

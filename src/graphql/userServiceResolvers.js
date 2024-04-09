@@ -47,9 +47,6 @@ export const userResolvers = {
           console.log("data: " + JSON.stringify(data));
           return {token: data.login.token, privilege: data.login.privilege};
         } catch (error) {
-          // console.error("Error in login resolver:", error);
-          // const message = error.response?.errors?.[0]?.message || 'An unexpected error occurred during login.';
-          // return { token: null, privilege: null, error: message };
           console.error("Error in login resolver:", error);
           const message = error.response?.errors?.[0]?.message || 'An unexpected error occurred during login.';
           throw new ApolloError(message, "LOGIN_FAILED");
