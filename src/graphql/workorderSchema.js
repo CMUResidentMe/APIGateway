@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express';
 
 export const workOrdeTypeDefs = gql`
   enum WorkStatus {
-    CREATED
+    OPEN
     ASSIGNED
     ONGOING
     FINISHED
@@ -11,40 +11,35 @@ export const workOrdeTypeDefs = gql`
   enum EntryPermission{
     CALLCONFIRM
     KNOCKDOOR
-    YES
+    ALL_PERMISSIONS
   }
 
-  type WorkOrder{
+  type DetailedWorkOrder{
     uuid: String!
     owner: String!
     workType: String
     priority: Int
     detail: String
-    entryPermission: EntryPermission!
-    status: WorkStatus!
-    accessInstruction: String
+    status: WorkStatus
     assignedStaff: String
-  }
-
-  type DetailedWorkOrder{
-    uuid: String!
+    accessInstruction: String
     preferredTime: String
+    entryPermission: EntryPermission
     images: [String!]
   }
 
   type Query {
-    workOrders: [WorkOrder]
-    workOrder(uuid: String!): WorkOrder
+    workOrders: [DetailedWorkOrder]
+    workOrdersByOwner: [DetailedWorkOrder!]
+    workOrdersByAssignedStaff: [DetailedWorkOrder!]
+    workOrder(uuid: String!): DetailedWorkOrder
   }
 
   type Mutation {
-    buildWorkOrder(owner: String!, workType: String, priority: Int, detail: String, preferredtime: String, entryPermission: EntryPermission, accessInstruction: String): WorkOrder
-    changeWorkOrder(uuid: String!, workType: String, priority: Int, detail: String): WorkOrder
-    setPreferredtime(uuid: String!, preferredtime: String!): WorkOrder
-    setEntryPermission(uuid: String!, entryPermission: EntryPermission!): WorkOrder
-    setAccessInstruction(uuid: String!, accessInstruction: String!): WorkOrder
-    setStatus(uuid: String!, status: WorkStatus!): WorkOrder
-    setPriority(uuid: String!, priority: Int!): WorkOrder
-    setAssignedstaff(uuid: String!, assignedStaff: String!): WorkOrder
+    createWorkOrder(workType: String, priority: Int, detail: String, assignedStaff: String, accessInstruction: String, preferredTime: String, entryPermission: EntryPermission): DetailedWorkOrder
+    changeWorkOrder(uuid: String!, workType: String, priority: Int, detail: String, assignedStaff: String, accessInstruction: String, preferredTime: String, entryPermission: EntryPermission): DetailedWorkOrder
+    updateWorkOrderStatus(uuid: String!, status: WorkStatus!): DetailedWorkOrder
+    uploadImages(uuid: String!, images: [String!]): DetailedWorkOrder
+    cancelWorkOrder(uuid: String!): String
   }
 `;

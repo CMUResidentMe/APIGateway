@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
+import * as morgan from "morgan";
+import jwt from 'jsonwebtoken';
 import { ApolloServer } from 'apollo-server-express';
 import { workOrdeTypeDefs } from './graphql/workorderSchema.js';
 import { workOrderResolvers } from './graphql/workorderResolvers.js';
@@ -11,6 +13,14 @@ import { userResolvers } from './graphql/userServiceResolvers.js';
 const startServer = async () => {
 
   const app = express();
+  app.use(morgan.default("dev"));
+  /*
+  app.use((req, res, next) => {
+    console.log(req.headers);
+    console.log(req.body);
+    next();
+  });
+  */
   const server = new ApolloServer({
     typeDefs: [workOrdeTypeDefs, userTypeDefs],
     resolvers: [workOrderResolvers, userResolvers], 
@@ -18,9 +28,8 @@ const startServer = async () => {
       // To find out the correct arguments for a specific integration,
       // see https://www.apollographql.com/docs/apollo-server/api/apollo-server/#middleware-specific-context-fields
       // Get the user token from the headers.
-      const token = req.headers.authorization || 'Lily';
-      // Try to retrieve a user with the token
-      //const user = getUser(token);
+      const token = req.headers.authorization;
+      //const decoded = jwt.verify(token, process.env.JWT_SECRET);
       return { user: token };
     },
   });
