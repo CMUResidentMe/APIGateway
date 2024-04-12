@@ -2,16 +2,25 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
+import * as morgan from "morgan";
+import jwt from 'jsonwebtoken';
 import { ApolloServer } from 'apollo-server-express';
 import { workOrdeTypeDefs } from './graphql/workorderSchema.js';
 import { workOrderResolvers } from './graphql/workorderResolvers.js';
 import { userTypeDefs } from './graphql/userServiceSchema.js';
 import { userResolvers } from './graphql/userServiceResolvers.js';
-import jwt from 'jsonwebtoken';
 
 const startServer = async () => {
 
   const app = express();
+  app.use(morgan.default("dev"));
+  /*
+  app.use((req, res, next) => {
+    console.log(req.headers);
+    console.log(req.body);
+    next();
+  });
+  */
   const server = new ApolloServer({
     typeDefs: [workOrdeTypeDefs, userTypeDefs],
     resolvers: [workOrderResolvers, userResolvers], 

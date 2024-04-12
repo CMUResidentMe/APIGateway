@@ -6,33 +6,29 @@ export const workOrderResolvers = {
     workOrders: async (parent, args, contextValue, info) => {
       return await workOrderController.getWorkOrders();
     },
+    workOrdersByOwner: async (parent, args, contextValue, info) => {
+      const user = contextValue.user;
+      return await workOrderController.workOrdersByOwner(args, user);
+    },
+    workOrdersByAssignedStaff: async (parent, args, contextValue, info) => {
+      const user = contextValue.user;
+      return await workOrderController.workOrdersByAssignedStaff(args, user);
+    },
     workOrder: async (parent, args, contextValue, info) => {
       return await workOrderController.getWorkOrder(args);
     },
   },
   
   Mutation: {
-    buildWorkOrder: async (parent, args, contextValue, info) => {
+    createWorkOrder: async (parent, args, contextValue, info) => {
       const user = contextValue.user;
-      return await workOrderController.buildWorkOrder(args, user);
+      return await workOrderController.createWorkOrder(args, user);
     },
     changeWorkOrder: async (parent, args, contextValue, info) => {
       return await workOrderController.changeWorkOrder(args);
     },
-    setPreferredtime: async (parent, args, contextValue, info) => {
-      return await workOrderController.setPreferredtime(args);
-    },
-    setAccessInstruction: async (parent, args, contextValue, info) => {
-      return await workOrderController.setAccessInstruction(args);
-    },
-    setStatus: async (parent, args, contextValue, info) => {
-      return await workOrderController.setStatus(args);
-    },
-    setPriority: async (parent, args, contextValue, info) => {
-      return await workOrderController.setPriority(args);
-    },
-    setAssignedstaff: async (parent, args, contextValue, info) => {
-      return await workOrderController.setAssignedstaff(args);
+    updateWorkOrderStatus: async (parent, args, contextValue, info) => {
+      return await workOrderController.updateWorkOrderStatus(args);
     },
   },
 };

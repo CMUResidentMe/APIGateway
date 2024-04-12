@@ -16,14 +16,16 @@ class WorkOrderController {
       {
         workOrders{
           uuid
-          accessInstruction
-          detail
-          entryPermission
           owner
-          preferredTime
+          workType
           priority
           status
-          workType
+          detail
+          assignedStaff
+          accessInstruction
+          preferredTime
+          entryPermission
+          images
         }
       }`;
       let wks = await this.client.request(query);
@@ -34,20 +36,75 @@ class WorkOrderController {
     }
   }
 
+  async workOrdersByOwner(woContent, user) {
+    try {
+      let query = gql`
+      query workOrdersByOwner($ownerUuid: String!) {
+        workOrdersByOwner(ownerUuid: $ownerUuid){
+          uuid
+          owner
+          workType
+          priority
+          status
+          detail
+          assignedStaff
+          accessInstruction
+          preferredTime
+          entryPermission
+          images
+        }
+      }`;
+      let variables = {'ownerUuid': user};
+      let wks = await this.client.request(query, variables);
+      return wks.workOrdersByOwner;
+    } catch (error) {
+      console.log("error", error);
+      throw "getWorkOrders failed";
+    }
+  }
+
+  async workOrdersByAssignedStaff(woContent, user) {
+    try {
+      let query = gql`
+      query workOrdersByAssignedStaff($assignedStaffUuid: String!) {
+        workOrdersByAssignedStaff(assignedStaffUuid: $assignedStaffUuid){
+          uuid
+          owner
+          workType
+          priority
+          status
+          detail
+          assignedStaff
+          accessInstruction
+          preferredTime
+          entryPermission
+          images
+        }
+      }`;
+      let variables = {'assignedStaffUuid': user};
+      let wks = await this.client.request(query, variables);
+      return wks.workOrdersByAssignedStaff;
+    } catch (error) {
+      console.log("error", error);
+      throw "getWorkOrders failed";
+    }
+  }
   async getWorkOrder(woContent) {
     try {
       let query = gql`
         query workOrder($uuid: String!) {
           workOrder(uuid: $uuid){
             uuid
-            accessInstruction
-            detail
-            entryPermission
             owner
-            preferredTime
+            workType
             priority
             status
-            workType
+            detail
+            assignedStaff
+            accessInstruction
+            preferredTime
+            entryPermission
+            images
           }
         }`;
       let wk = await this.client.request(query, woContent);
@@ -58,43 +115,48 @@ class WorkOrderController {
     }
   }
 
-  async buildWorkOrder(workOrderContent, user) {
+  async createWorkOrder(workOrderContent, user) {
     try {
       const mutation = gql`
-        mutation buildWorkOrder($owner: String!, $workType: String!, $priority: Int!, $detail: String, $preferredtime: String!, $entryPermission: EntryPermission, $accessInstruction: String) {
-          buildWorkOrder(owner: $owner, workType: $workType, priority: $priority, detail: $detail, preferredtime: $preferredtime, entryPermission: $entryPermission, accessInstruction: $accessInstruction){
+        mutation createWorkOrder($owner: String!, $workType: String!, $priority: Int!, $detail: String, $assignedStaff: String, $accessInstruction: String, $preferredTime: String, $entryPermission: EntryPermission) {
+          createWorkOrder(owner: $owner, workType: $workType, priority: $priority, detail: $detail, assignedStaff: $assignedStaff, accessInstruction: $accessInstruction, preferredTime: $preferredTime, entryPermission: $entryPermission){
             uuid
-            accessInstruction
-            detail
-            entryPermission
             owner
-            preferredTime
+            workType
             priority
             status
-            workType
+            detail
+            assignedStaff
+            accessInstruction
+            preferredTime
+            entryPermission
           }
         }
       `;
       workOrderContent.owner = user;
-      let wk = await this.clientMutition.requestConfig(mutation, workOrderContent);
-      return wk.buildWorkOrder;
+      let wk = await this.clientMutition.request(mutation, workOrderContent);
+      return wk.createWorkOrder;
     } catch (error) {
       console.log("error", error);
-      throw "buildWorkOrder failed";
+      throw "createWorkOrder failed";
     }
   }
 
   async changeWorkOrder(woContent) {
     try {
       const mutation = gql`
-        mutation changeWorkOrder($uuid: String!, $workType: String!, $priority: Int!, $detail: String) {
-          changeWorkOrder(uuid: $uuid, workType: $workType, priority: $priority, detail: $detail) {
+        mutation changeWorkOrder($uuid: String!, $workType: String!, $priority: Int!, $detail: String, $assignedStaff: String, $accessInstruction: String, $preferredTime: String, $entryPermission: EntryPermission) {
+          changeWorkOrder(uuid: $uuid, workType: $workType, priority: $priority, detail: $detail, assignedStaff: $assignedStaff, accessInstruction: $accessInstruction, preferredTime: $preferredTime, entryPermission: $entryPermission) {
             uuid
-            detail
             owner
+            workType
             priority
             status
-            workType
+            detail
+            assignedStaff
+            accessInstruction
+            preferredTime
+            entryPermission
           }
         }
       `;
@@ -106,117 +168,40 @@ class WorkOrderController {
     }
   }
 
-  async setPreferredtime(woContent){
+  async updateWorkOrderStatus(woContent){
     try {
       const mutation = gql`
-        mutation setPreferredtime($uuid: String!, $preferredtime: String!) {
-          setPreferredtime(uuid: $uuid, preferredtime: $preferredtime){
+        mutation updateWorkOrderStatus($uuid: String!, $status: WorkStatus!) {
+          updateWorkOrderStatus(uuid: $uuid, status: $status){
             uuid
             owner
-            preferredtime
-          }
-        }
-      `;
-      let wk = await this.clientMutition.request(mutation, woContent);
-      return wk.setPreferredtime;
-    } catch (error) {
-      console.log("error", error);
-      throw "setPreferredtime failed";
-    }
-  }
-
-  async setAccessInstruction(woContent){
-    try {
-      const mutation = gql`
-        mutation setAccessInstruction($uuid: String!, $accessInstruction: String) {
-          setAccessInstruction(uuid: $uuid, accessInstruction: $accessInstruction){
-            uuid
-            owner
-            accessInstruction
-          }
-        }
-      `;
-      let wk = await this.clientMutition.request(mutation, woContent);
-      return wk.setAccessInstruction;
-    } catch (error) {
-      console.log("error", error);
-      throw "setAccessInstruction failed";
-    }
-  }
-
-  async setStatus(woContent){
-    try {
-      const mutation = gql`
-        mutation setStatus($uuid: String!, $status: WorkStatus!) {
-          setStatus(uuid: $uuid, status: $status){
-            uuid
-            owner
+            assignedStaff
             status
           }
         }
       `;
       let wk = await this.clientMutition.request(mutation, woContent);
-      return wk.setStatus;
+      return wk.updateWorkOrderStatus;
     } catch (error) {
       console.log("error", error);
-      throw "setStatus failed";
+      throw "updateWorkOrderStatus failed";
     }
   }
 
-  async setPriority(woContent){
+  async cancelWorkOrder(woContent){
     try {
       const mutation = gql`
-        mutation setPriority($uuid: String!, $priority: Int!) {
-          setPriority(uuid: $uuid, priority: $priority){
+        mutation cancelWorkOrder($uuid: String!) {
+          cancelWorkOrder(uuid: $uuid){
             uuid
-            owner
-            priority
           }
         }
       `;
       let wk = await this.clientMutition.request(mutation, woContent);
-      return wk.setPriority;
+      return wk.cancelWorkOrder;
     } catch (error) {
       console.log("error", error);
-      throw "setPriority failed";
-    }
-  }
-
-  async setAssignedstaff(woContent){
-    try {
-      const mutation = gql`
-        mutation setAssignedstaff($uuid: String!, $assignedstaff: String) {
-          setAssignedstaff(uuid: $uuid, assignedstaff: $assignedstaff){
-            uuid
-            owner
-            assignedstaff
-          }
-        }
-      `;
-      let wk = await this.clientMutition.request(mutation, woContent);
-      return wk.setAssignedstaff;
-    } catch (error) {
-      console.log("error", error);
-      throw "setAssignedstaff failed";
-    }
-  }
-
-  async setEntryPermission(woContent){
-    try {
-      const mutation = gql`
-        mutation setEntryPermission($uuid: String!, $entryPermission: EntryPermission) {
-          setEntryPermission(uuid: $uuid, entryPermission: $entryPermission){
-            uuid
-            owner
-            entryPermission
-          }
-        }
-      `;
-      let wk = await this.clientMutition.request(mutation, woContent);
-      return wk.setAssignedstaff;
-    } catch (error) {
-      console.log("error", error);
-      throw "setAssignedstaff failed";
+      throw "cancelWorkOrder failed";
     }
   }
 
