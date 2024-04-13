@@ -28,9 +28,20 @@ const startServer = async () => {
       // To find out the correct arguments for a specific integration,
       // see https://www.apollographql.com/docs/apollo-server/api/apollo-server/#middleware-specific-context-fields
       // Get the user token from the headers.
-      const token = req.headers.authorization;
-      //const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      return { user: token };
+      //console.log(req.body.operationName);
+      if(req.body.operationName !== 'Register' && 
+        req.body.operationName !== 'register' && 
+        req.body.operationName !== 'Login' && 
+        req.body.operationName !== 'login'
+      ){
+        try{
+          const token = req.headers.authorization;
+          const decoded = jwt.verify(token, process.env.JWT_SECRET);
+          return { user: decoded.id};
+        }catch(err){
+          console.error("Error: error token ", err);
+        }
+      }
     },
   });
   // Make sure to start Apollo Server before applying middleware

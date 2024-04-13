@@ -25,7 +25,6 @@ export const workOrdeTypeDefs = gql`
     accessInstruction: String
     preferredTime: String
     entryPermission: EntryPermission
-    images: [String!]
   }
 
   type Query {

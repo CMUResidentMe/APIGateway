@@ -25,7 +25,6 @@ class WorkOrderController {
           accessInstruction
           preferredTime
           entryPermission
-          images
         }
       }`;
       let wks = await this.client.request(query);
@@ -51,10 +50,10 @@ class WorkOrderController {
           accessInstruction
           preferredTime
           entryPermission
-          images
         }
       }`;
       let variables = {'ownerUuid': user};
+      console.log(variables);
       let wks = await this.client.request(query, variables);
       return wks.workOrdersByOwner;
     } catch (error) {
@@ -78,7 +77,6 @@ class WorkOrderController {
           accessInstruction
           preferredTime
           entryPermission
-          images
         }
       }`;
       let variables = {'assignedStaffUuid': user};
@@ -104,7 +102,6 @@ class WorkOrderController {
             accessInstruction
             preferredTime
             entryPermission
-            images
           }
         }`;
       let wk = await this.client.request(query, woContent);
