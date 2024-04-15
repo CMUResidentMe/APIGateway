@@ -3,17 +3,22 @@ dotenv.config();
 
 import express from 'express';
 import * as morgan from "morgan";
+import cors from "cors";
 import jwt from 'jsonwebtoken';
 import { ApolloServer } from 'apollo-server-express';
 import { workOrdeTypeDefs } from './graphql/workorderSchema.js';
 import { workOrderResolvers } from './graphql/workorderResolvers.js';
 import { userTypeDefs } from './graphql/userServiceSchema.js';
 import { userResolvers } from './graphql/userServiceResolvers.js';
+import { getMulter } from './controllers/workorder/workOrderFileUpload.js';
 
 const startServer = async () => {
 
   const app = express();
+  app.use(cors());
   app.use(morgan.default("dev"));
+  app.use(express.static("uploads"));
+
   /*
   app.use((req, res, next) => {
     console.log(req.headers);
@@ -21,6 +26,12 @@ const startServer = async () => {
     next();
   });
   */
+
+  app.post("/workorder/upload", getMulter().single('file'), (req, res) => {
+    let fileURL = req.file.path;
+    res.status(201).json({ fileURL });
+  });
+
   const server = new ApolloServer({
     typeDefs: [workOrdeTypeDefs, userTypeDefs],
     resolvers: [workOrderResolvers, userResolvers], 

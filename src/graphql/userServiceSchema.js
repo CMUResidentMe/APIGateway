@@ -1,13 +1,18 @@
 import { gql } from 'apollo-server-express';
 
 export const userTypeDefs = gql`
+  enum PrivilegeType{
+    manager
+    staff
+    resident
+  }
 
   type Query {
     _empty: String
   }
 
   type Mutation {
-    register(username: String!, password: String!, firstName: String!, lastName: String!, roomNumber: Int!): String
+    register(username: String!, password: String!, firstName: String!, lastName: String!, roomNumber: Int, privilege: PrivilegeType): String
     login(username: String!, password: String!): AuthResponse
   }
   
@@ -19,6 +24,6 @@ export const userTypeDefs = gql`
 
   type AuthResponse {
     token: String
-    privilege: String
+    privilege: PrivilegeType
   }
 `;
