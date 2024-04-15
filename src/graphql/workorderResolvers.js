@@ -1,5 +1,5 @@
 
-import { workOrderController } from "../controllers/workOrderController.js";
+import { workOrderController } from "../controllers/workorder/workOrderController.js";
 
 export const workOrderResolvers = {
   Query: {
@@ -9,6 +9,9 @@ export const workOrderResolvers = {
     workOrdersByOwner: async (parent, args, contextValue, info) => {
       const user = contextValue.user;
       return await workOrderController.workOrdersByOwner(args, user);
+    },
+    workOrdersUnassined: async (parent, args, contextValue, info) => {
+      return await workOrderController.workOrdersUnassined();
     },
     workOrdersByAssignedStaff: async (parent, args, contextValue, info) => {
       const user = contextValue.user;
@@ -29,6 +32,17 @@ export const workOrderResolvers = {
     },
     updateWorkOrderStatus: async (parent, args, contextValue, info) => {
       return await workOrderController.updateWorkOrderStatus(args);
+    },
+    assignedStaff: async (parent, args, contextValue, info) => {
+      const user = contextValue.user;
+      return await workOrderController.assignedStaff(args, user);
+    },
+    unAssignedStaff: async (parent, args, contextValue, info) => {
+      return await workOrderController.unAssignedStaff(args);
+    },
+    cancelWorkOrder: async (parent, args, contextValue, info) => {
+      const user = contextValue.user;
+      return await workOrderController.cancelWorkOrder(args);
     },
   },
 };

@@ -2,11 +2,10 @@ import { gql, request } from 'graphql-request';
 import { ApolloError } from 'apollo-server-express';
 
 const REGISTER_MUTATION = gql`
-  mutation Register($username: String!, $password: String!, $firstName: String!, $lastName: String!, $roomNumber: Int!) {
-    register(username: $username, password: $password, firstName: $firstName, lastName: $lastName, roomNumber: $roomNumber)
+  mutation Register($username: String!, $password: String!, $firstName: String!, $lastName: String!, $roomNumber: Int!, $privilege: PrivilegeType) {
+    register(username: $username, password: $password, firstName: $firstName, lastName: $lastName, roomNumber: $roomNumber, privilege: $privilege)
   }
 `;
-
 
 const LOGIN_MUTATION = gql`
   mutation Login($username: String!, $password: String!) {
@@ -22,7 +21,7 @@ export const userResolvers = {
         _empty: () => '',
       },
     Mutation: {
-      register: async (_, { username, password, firstName, lastName, roomNumber }) => {
+      register: async (_, { username, password, firstName, lastName, roomNumber, privilege }) => {
         try {
           const data = await request(process.env.USER_SERVICE_URL, REGISTER_MUTATION, {
             username,
@@ -30,6 +29,7 @@ export const userResolvers = {
             firstName,
             lastName,
             roomNumber,
+            privilege,
           });
           return data.register;
         } catch (error) {
