@@ -6,7 +6,7 @@ import * as morgan from "morgan";
 import cors from "cors";
 import jwt from 'jsonwebtoken';
 import { ApolloServer } from 'apollo-server-express';
-import { workOrdeTypeDefs } from './graphql/workorderSchema.js';
+import { workOrderTypeDefs } from './graphql/workorderSchema.js';
 import { workOrderResolvers } from './graphql/workorderResolvers.js';
 import { userTypeDefs } from './graphql/userServiceSchema.js';
 import { userResolvers } from './graphql/userServiceResolvers.js';
@@ -33,7 +33,7 @@ const startServer = async () => {
   });
 
   const server = new ApolloServer({
-    typeDefs: [workOrdeTypeDefs, userTypeDefs],
+    typeDefs: [workOrderTypeDefs, userTypeDefs],
     resolvers: [workOrderResolvers, userResolvers], 
     context: ({ req }) => {
       // To find out the correct arguments for a specific integration,
