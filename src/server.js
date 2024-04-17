@@ -16,16 +16,17 @@ const startServer = async () => {
 
   const app = express();
   app.use(cors());
+  app.use(express.json());
   app.use(morgan.default("dev"));
   app.use(express.static("uploads"));
 
-  /*
-  app.use((req, res, next) => {
-    console.log(req.headers);
-    console.log(req.body);
-    next();
-  });
-  */
+
+  // app.use((req, res, next) => {
+  //   console.log(req.headers);
+  //   console.log(req.body);
+  //   next();
+  // });
+
 
   app.post("/workorder/upload", getMulter().single('file'), (req, res) => {
     let fileURL = req.file.path;

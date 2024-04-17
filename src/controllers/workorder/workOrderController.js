@@ -4,13 +4,14 @@ import { request, gql, GraphQLClient } from 'graphql-request';
 
 class WorkOrderController {
 
-    constructor() {
-        this.client = new GraphQLClient(process.env.WORKORDER_CLIENT_URI, { method: 'POST' });
-        console.log('WorkOrder Service Client Initialized with URI:', process.env.WORKORDER_CLIENT_URI);
-    }
+  constructor() {
+    this.client = new GraphQLClient(process.env.WORKORDER_CLIENT_URI, { method: 'POST' });
+    console.log('WorkOrder Service Client Initialized with URI:', process.env.WORKORDER_CLIENT_URI);
+  }
 
-    async getWorkOrders() {
-        const query = gql`
+  // Query
+  async findAllWorkOrders() {
+    const query = gql`
       query {
         workOrders {
           uuid
@@ -27,17 +28,17 @@ class WorkOrderController {
           assignedStaff
         }
       }`;
-        try {
-            const data = await this.client.request(query);
-            return data.workOrders;
-        } catch (error) {
-            console.error("Error retrieving work orders:", error);
-            throw new Error("Failed to retrieve work orders.");
-        }
+    try {
+      let data = await this.client.request(query);
+      return data.workOrders;
+    } catch (error) {
+      console.error("Error retrieving work orders:", error);
+      throw new Error("Failed to retrieve work orders.");
     }
+  }
 
-    async workOrdersByOwner(ownerUuid) {
-        const query = gql`
+  async findWorkOrdersByOwner(workOrderDetails, user) {
+    const query = gql`
       query workOrdersByOwner($ownerUuid: String!) {
         workOrdersByOwner(ownerUuid: $ownerUuid) {
           uuid
@@ -54,17 +55,102 @@ class WorkOrderController {
           assignedStaff
         }
       }`;
-        try {
-            const data = await this.client.request(query, { ownerUuid });
-            return data.workOrdersByOwner;
-        } catch (error) {
-            console.error("Error retrieving work orders by owner:", error);
-            throw new Error("Failed to retrieve work orders by owner.");
-        }
+    try {
+      let variables = { 'ownerUuid': user };
+      let data = await this.client.request(query, variables);
+      return data.workOrdersByOwner;
+    } catch (error) {
+      console.error("Error retrieving work orders by owner:", error);
+      throw new Error("Failed to retrieve work orders by owner.");
     }
+  }
 
-    async createWorkOrder(workOrderDetails) {
-        const mutation = gql`
+  async findAllUnAssignedWorkOrders() {
+    const query = gql`
+    query {
+      workOrdersUnassigned {
+        uuid
+        semanticId
+        owner
+        workType
+        priority
+        detail
+        status
+        accessInstruction
+        preferredTime
+        entryPermission
+        images
+        assignedStaff
+      }
+    }`;
+    try {
+      let data = await this.client.request(query);
+      return data.workOrdersUnassigned;
+    } catch (error) {
+      console.error("Error retrieving unassigned work orders:", error);
+      throw new Error("Failed to retrieve unassigned work orders.");
+    }
+  }
+  
+    async findWorkOrdersByAssignedStaff(workOrderDetails, user) {
+    const query = gql`
+    query workOrdersByAssignedStaff($assignedStaffUuid: String!) {
+      workOrdersByAssignedStaff(assignedStaffUuid: $assignedStaffUuid) {
+        uuid
+        semanticId
+        owner
+        workType
+        priority
+        detail
+        status
+        accessInstruction
+        preferredTime
+        entryPermission
+        images
+        assignedStaff
+      }
+    }`;
+    try {
+      let variables = { 'assignedStaffUuid': user };
+      let data = await this.client.request(query, variables);
+      return data.workOrdersByAssignedStaff;
+    } catch (error) {
+      console.error("Error retrieving work orders by assigned staff:", error);
+      throw new Error("Failed to retrieve work orders by assigned staff.");
+    }
+  }
+  
+  async findOneWorkOrder(workOrderDetails) {
+    const query = gql`
+    query workOrder($uuid: String!) {
+      workOrder(uuid: $uuid) {
+        uuid
+        semanticId
+        owner
+        workType
+        priority
+        detail
+        status
+        accessInstruction
+        preferredTime
+        entryPermission
+        images
+        assignedStaff
+      }
+    }`;
+    try {
+      let data = await this.client.request(query, workOrderDetails);
+      return data.workOrder;
+    } catch (error) {
+      console.error("Error retrieving work order:", error);
+      throw new Error("Failed to retrieve work order.");
+    }
+  }
+
+  // Mutation
+  async createWorkOrder(workOrderDetails, user) {
+    console.log("Creating new work order with details:", workOrderDetails);
+    const mutation = gql`
       mutation createWorkOrder($owner: String!, $workType: String!, $priority: Priority!, $detail: String, $accessInstruction: String, $preferredTime: String, $entryPermission: EntryPermission, $images: [String!]) {
         createWorkOrder(owner: $owner, workType: $workType, priority: $priority, detail: $detail, accessInstruction: $accessInstruction, preferredTime: $preferredTime, entryPermission: $entryPermission, images: $images) {
           uuid
@@ -78,19 +164,36 @@ class WorkOrderController {
           preferredTime
           entryPermission
           images
+          assignedStaff
         }
       }`;
-        try {
-            const data = await this.client.request(mutation, workOrderDetails);
-            return data.createWorkOrder;
-        } catch (error) {
-            console.error("Error creating work order:", error);
-            throw new Error("Failed to create work order.");
-        }
-    }
 
-    async changeWorkOrder(workOrderDetails) {
-        const mutation = gql`
+    try {
+      const PORT = process.env.PORT || 2009;
+      let newImages = [];
+      workOrderDetails.images.map(imagePath => {
+        if (imagePath.startsWith("uploads")) {//uploads
+          let mewPath = imagePath.replaceAll("\\", "/");
+          mewPath = mewPath.replace("uploads/", "");
+          mewPath = `http://localhost:${PORT}/${mewPath}`;
+          newImages.push(mewPath);
+        } else {
+          newImages.push(imagePath);
+        }
+      });
+      workOrderDetails.images = newImages;
+      workOrderDetails.owner = user;
+      console.log(workOrderDetails);
+      let wk = await this.client.request(mutation, workOrderDetails);
+      return wk.createWorkOrder;
+    } catch (error) {
+      console.error("Error creating work order:", error);
+      throw new Error("Failed to create work order.");
+    }
+  }
+
+  async changeWorkOrder(workOrderDetails) {
+    const mutation = gql`
       mutation changeWorkOrder($uuid: String!, $workType: String, $priority: Priority, $detail: String, $accessInstruction: String, $preferredTime: String, $entryPermission: EntryPermission, $images: [String!]) {
         changeWorkOrder(uuid: $uuid, workType: $workType, priority: $priority, detail: $detail, accessInstruction: $accessInstruction, preferredTime: $preferredTime, entryPermission: $entryPermission, images: $images) {
           uuid
@@ -104,96 +207,119 @@ class WorkOrderController {
           preferredTime
           entryPermission
           images
+          assignedStaff
         }
       }`;
-        try {
-            const data = await this.client.request(mutation, workOrderDetails);
-            return data.changeWorkOrder;
-        } catch (error) {
-            console.error("Error changing work order:", error);
-            throw new Error("Failed to change work order.");
-        }
+    try {
+      let data = await this.client.request(mutation, workOrderDetails);
+      return data.changeWorkOrder;
+    } catch (error) {
+      console.error("Error changing work order:", error);
+      throw new Error("Failed to change work order.");
     }
+  }
 
-    async updateWorkOrderStatus(uuid, status) {
-        const mutation = gql`
+  async updateWorkOrderStatus(workOrderDetails) {
+    const mutation = gql`
       mutation updateWorkOrderStatus($uuid: String!, $status: WorkStatus!) {
         updateWorkOrderStatus(uuid: $uuid, status: $status) {
           uuid
           semanticId
+          owner
+          workType
+          priority
+          detail
           status
+          accessInstruction
+          preferredTime
+          entryPermission
+          images
+          assignedStaff
         }
       }
     `;
-        try {
-            const variables = { uuid, status };
-            const result = await this.client.request(mutation, variables);
-            return result.updateWorkOrderStatus;
-        } catch (error) {
-            console.error("Error updating work order status:", error);
-            throw new Error("Failed to update work order status.");
-        }
+    try {
+      let result = await this.client.request(mutation, workOrderDetails);
+      return result.updateWorkOrderStatus;
+    } catch (error) {
+      console.error("Error updating work order status:", error);
+      throw new Error("Failed to update work order status.");
     }
+  }
 
-    async assignWorkOrderStaff(uuid, assignedStaff) {
-        const mutation = gql`
-      mutation assignStaff($uuid: String!, $assignedStaff: String!) {
-        assignStaff(uuid: $uuid, assignedStaff: $assignedStaff) {
+  async assignWorkOrderStaff(workOrderDetails, user) {
+    const mutation = gql`
+      mutation assignWorkOrderStaff($uuid: String!, $assignedStaff: String!) {
+        assignWorkOrderStaff(uuid: $uuid, assignedStaff: $assignedStaff) {
           uuid
           semanticId
-          assignedStaff
+          owner
+          workType
+          priority
+          detail
           status
+          accessInstruction
+          preferredTime
+          entryPermission
+          images
+          assignedStaff
         }
       }
     `;
-        try {
-            const variables = { uuid, assignedStaff };
-            const result = await this.client.request(mutation, variables);
-            return result.assignStaff;
-        } catch (error) {
-            console.error("Error assigning staff to work order:", error);
-            throw new Error("Failed to assign staff to work order.");
-        }
+    try {
+      workOrderDetails.assignedStaff = user;
+      let result = await this.client.request(mutation, workOrderDetails);
+      return result.assignStaff;
+    } catch (error) {
+      console.error("Error assigning staff to work order:", error);
+      throw new Error("Failed to assign staff to work order.");
     }
+  }
 
-    async unassignWorkOrderStaff(uuid) {
-        const mutation = gql`
-      mutation unassignStaff($uuid: String!) {
-        unassignStaff(uuid: $uuid) {
+  async unassignWorkOrderStaff(workOrderDetails) {
+    const mutation = gql`
+      mutation unassignWorkOrderStaff($uuid: String!, $assignedStaff: String) {
+        unassignWorkOrderStaff(uuid: $uuid, assignedStaff: $assignedStaff) {
           uuid
           semanticId
-          assignedStaff
+          owner
+          workType
+          priority
+          detail
           status
+          accessInstruction
+          preferredTime
+          entryPermission
+          images
+          assignedStaff
         }
       }
     `;
-        try {
-            const variables = { uuid };
-            const result = await this.client.request(mutation, variables);
-            return result.unassignStaff;
-        } catch (error) {
-            console.error("Error unassigning staff from work order:", error);
-            throw new Error("Failed to unassign staff from work order.");
-        }
+    try {
+      let result = await this.client.request(mutation, workOrderDetails);
+      return result.assignedStaff;
+    } catch (error) {
+      console.error("Error unassigning staff from work order:", error);
+      throw new Error("Failed to unassign staff from work order.");
     }
+  }
 
-    async cancelWorkOrder(uuid) {
-        const mutation = gql`
+  async cancelWorkOrder(workOrderDetails) {
+    const mutation = gql`
       mutation cancelWorkOrder($uuid: String!) {
         cancelWorkOrder(uuid: $uuid) {
           uuid
         }
       }
     `;
-        try {
-            const variables = { uuid };
-            const result = await this.client.request(mutation, variables);
-            return result.cancelWorkOrder;
-        } catch (error) {
-            console.error("Error canceling work order:", error);
-            throw new Error("Failed to cancel work order.");
-        }
+    try {
+      let result = await this.client.request(mutation, workOrderDetails);
+      return result.cancelWorkOrder;
+    } catch (error) {
+      console.error("Error canceling work order:", error);
+      throw new Error("Failed to cancel work order.");
     }
+  }
 
 
 }
