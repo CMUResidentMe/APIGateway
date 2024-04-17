@@ -6,8 +6,8 @@ import * as morgan from "morgan";
 import cors from "cors";
 import jwt from 'jsonwebtoken';
 import { ApolloServer } from 'apollo-server-express';
-// import { workOrderTypeDefs } from './graphql/workorder/workorderSchema.js';
-// import { workOrderResolvers } from './graphql/workorder/workorderResolvers.js';
+import { workOrderTypeDefs } from './graphql/workOrderServiceSchema.js';
+import { workOrderResolvers } from './graphql/workOrderServiceResolvers.js';
 import { userTypeDefs } from './graphql/userServiceSchema.js';
 import { userResolvers } from './graphql/userServiceResolvers.js';
 import { getMulter } from './controllers/workorder/workOrderFileUpload.js';
@@ -34,10 +34,8 @@ const startServer = async () => {
   });
 
   const server = new ApolloServer({
-    // typeDefs: [workOrderTypeDefs, userTypeDefs],
-    typeDefs: [userTypeDefs],
-    // resolvers: [workOrderResolvers, userResolvers], 
-    resolvers: [userResolvers],
+    typeDefs: [workOrderTypeDefs, userTypeDefs],
+    resolvers: [workOrderResolvers, userResolvers], 
     context: ({ req }) => {
       // To find out the correct arguments for a specific integration,
       // see https://www.apollographql.com/docs/apollo-server/api/apollo-server/#middleware-specific-context-fields
