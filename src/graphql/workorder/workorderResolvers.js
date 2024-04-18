@@ -16,6 +16,9 @@ export const workOrderResolvers = {
       const user = context.user;
       return await workOrderController.findWorkOrdersByAssignedStaff(args, user);
     },
+    workOrdersByStatus: async (parent, args, context, info) => {
+      return await workOrderController.findWorkOrdersByStatus(args);
+    },
     workOrder: async (parent, args, context, info) => {
       return await workOrderController.findOneWorkOrder(args);
     },
@@ -34,7 +37,7 @@ export const workOrderResolvers = {
     },
     assignWorkOrderStaff: async (parent, args, context, info) => {
       const user = context.user;
-      return await workOrderController.assignWorkOrderStaff(args, args);
+      return await workOrderController.assignWorkOrderStaff(args, user);
     },
     unassignWorkOrderStaff: async (parent, args, context, info) => {
       return await workOrderController.unassignWorkOrderStaff(args);
