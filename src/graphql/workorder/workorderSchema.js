@@ -33,6 +33,7 @@ export const workOrderTypeDefs = gql`
     entryPermission: EntryPermission
     images: [String!]
     assignedStaff: String
+    createTime: String
   }
 
   type Query {
@@ -40,6 +41,7 @@ export const workOrderTypeDefs = gql`
     workOrdersByOwner: [DetailedWorkOrder!]
     workOrdersUnassigned: [DetailedWorkOrder]
     workOrdersByAssignedStaff: [DetailedWorkOrder!]
+    workOrdersByStatus(status: WorkStatus!): [DetailedWorkOrder!]
     workOrder(uuid: String!): DetailedWorkOrder
   }
 

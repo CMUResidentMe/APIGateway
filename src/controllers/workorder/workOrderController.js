@@ -26,6 +26,7 @@ class WorkOrderController {
           entryPermission
           images
           assignedStaff
+          createTime
         }
       }`;
     try {
@@ -53,6 +54,7 @@ class WorkOrderController {
           entryPermission
           images
           assignedStaff
+          createTime
         }
       }`;
     try {
@@ -81,6 +83,7 @@ class WorkOrderController {
         entryPermission
         images
         assignedStaff
+        createTime
       }
     }`;
     try {
@@ -108,6 +111,7 @@ class WorkOrderController {
         entryPermission
         images
         assignedStaff
+        createTime
       }
     }`;
     try {
@@ -117,6 +121,34 @@ class WorkOrderController {
     } catch (error) {
       console.error("Error retrieving work orders by assigned staff:", error);
       throw new Error("Failed to retrieve work orders by assigned staff.");
+    }
+  }
+
+  async findWorkOrdersByStatus(workOrderDetails) {
+    const query = gql`
+    query workOrdersByStatus($status: WorkStatus!) {
+      workOrdersByStatus(status: $status) {
+        uuid
+        semanticId
+        owner
+        workType
+        priority
+        detail
+        status
+        accessInstruction
+        preferredTime
+        entryPermission
+        images
+        assignedStaff
+        createTime
+      }
+    }`;
+    try {
+      let data = await this.client.request(query, workOrderDetails);
+      return data.workOrdersByStatus;
+    } catch (error) {
+      console.error("Error retrieving work orders by status:", error);
+      throw new Error("Failed to retrieve work orders by status.");
     }
   }
   
@@ -136,6 +168,7 @@ class WorkOrderController {
         entryPermission
         images
         assignedStaff
+        createTime
       }
     }`;
     try {
@@ -165,6 +198,7 @@ class WorkOrderController {
           entryPermission
           images
           assignedStaff
+          createTime
         }
       }`;
 
@@ -208,6 +242,7 @@ class WorkOrderController {
           entryPermission
           images
           assignedStaff
+          createTime
         }
       }`;
     try {
@@ -235,6 +270,7 @@ class WorkOrderController {
           entryPermission
           images
           assignedStaff
+          createTime
         }
       }
     `;
@@ -263,13 +299,14 @@ class WorkOrderController {
           entryPermission
           images
           assignedStaff
+          createTime
         }
       }
     `;
     try {
       workOrderDetails.assignedStaff = user;
       let result = await this.client.request(mutation, workOrderDetails);
-      return result.assignStaff;
+      return result.assignWorkOrderStaff;
     } catch (error) {
       console.error("Error assigning staff to work order:", error);
       throw new Error("Failed to assign staff to work order.");
@@ -278,8 +315,8 @@ class WorkOrderController {
 
   async unassignWorkOrderStaff(workOrderDetails) {
     const mutation = gql`
-      mutation unassignWorkOrderStaff($uuid: String!, $assignedStaff: String) {
-        unassignWorkOrderStaff(uuid: $uuid, assignedStaff: $assignedStaff) {
+      mutation unassignWorkOrderStaff($uuid: String!) {
+        unassignWorkOrderStaff(uuid: $uuid) {
           uuid
           semanticId
           owner
@@ -292,12 +329,13 @@ class WorkOrderController {
           entryPermission
           images
           assignedStaff
+          createTime
         }
       }
     `;
     try {
       let result = await this.client.request(mutation, workOrderDetails);
-      return result.assignedStaff;
+      return result.unassignWorkOrderStaff;
     } catch (error) {
       console.error("Error unassigning staff from work order:", error);
       throw new Error("Failed to unassign staff from work order.");
