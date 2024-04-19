@@ -12,8 +12,9 @@ export const commBoardResolvers = {
   },
   Mutation: {
     createThread: async (_, { title, content }, context) => {
-      const userId = context.user.id;
-      const userName = await userService.getUsernameById(userId);
+      const userId = context.user;
+      const user = await userService.getUserById(userId);
+      const userName = user.username;
       return await commBoardController.createThread(
         title,
         content,
@@ -22,13 +23,15 @@ export const commBoardResolvers = {
       );
     },
     deleteThread: async (_, { id }, context) => {
-      const userId = context.user.id;
-      const privilege = context.user.privilege;
+      const userId = context.user;
+      const user = await userService.getUserById(userId);
+      const privilege = user.privilege;
       return await commBoardController.deleteThread(id, userId, privilege);
     },
     createPost: async (_, { threadId, content }, context) => {
-      const userId = context.user.id;
-      const userName = await userService.getUsernameById(userId);
+      const userId = context.user;
+      const user = await userService.getUserById(userId);
+      const userName = user.username;
       return await commBoardController.createPost(
         threadId,
         content,
@@ -37,13 +40,15 @@ export const commBoardResolvers = {
       );
     },
     deletePost: async (_, { id }, context) => {
-      const userId = context.user.id;
-      const privilege = context.user.privilege;
+      const userId = context.user;
+      const user = await userService.getUserById(userId);
+      const privilege = user.privilege;
       return await commBoardController.deletePost(id, userId, privilege);
     },
     createReply: async (_, { postId, content }, context) => {
-      const userId = context.user.id;
-      const userName = await userService.getUsernameById(userId);
+      const userId = context.user;
+      const user = await userService.getUserById(userId);
+      const userName = user.username;
       return await commBoardController.createReply(
         postId,
         content,
@@ -52,8 +57,10 @@ export const commBoardResolvers = {
       );
     },
     deleteReply: async (_, { id }, context) => {
-      const userId = context.user.id;
-      const privilege = context.user.privilege;
+      const userId = context.user;
+      const user = await userService.getUserById(userId);
+      console.log("user: ", user);
+      const privilege = user.privilege;
       return await commBoardController.deleteReply(id, userId, privilege);
     },
   },
