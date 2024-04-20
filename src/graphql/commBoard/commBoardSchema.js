@@ -7,7 +7,7 @@ export const commBoardTypeDefs = gql`
     content: String!
     userId: String!
     userName: String!
-    posts: [Post]
+    createdAt: String!
   }
 
   type Post {
@@ -15,7 +15,7 @@ export const commBoardTypeDefs = gql`
     content: String!
     userId: String!
     userName: String!
-    replies: [Reply]
+    createdAt: String!
   }
 
   type Reply {
@@ -23,11 +23,14 @@ export const commBoardTypeDefs = gql`
     content: String!
     userId: String!
     userName: String!
+    createdAt: String!
   }
 
   type Query {
-    threads: [Thread]
+    threads(pageNum: Int!, pageSize: Int!): [Thread]
     thread(id: ID!): Thread
+    postsByThread(threadId: ID!, pageNum: Int!, pageSize: Int!): [Post]
+    repliesByPost(postId: ID!, pageNum: Int!, pageSize: Int!): [Reply]
   }
 
   type Mutation {
