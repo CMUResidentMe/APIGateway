@@ -359,7 +359,6 @@ class WorkOrderController {
     }
   }
 
-
 }
 
 const workOrderController = new WorkOrderController();
