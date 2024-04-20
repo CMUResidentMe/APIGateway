@@ -19,7 +19,9 @@ import { getMulter } from "./controllers/workorder/workOrderFileUpload.js";
 const startServer = async () => {
   const app = express();
   app.use(cors());
-  app.use(express.json());
+  app.use(express.json({
+    limit: "50mb",
+  }));
   app.use(morgan.default("dev"));
   app.use(express.static("uploads"));
 
@@ -35,8 +37,10 @@ const startServer = async () => {
   });
 
   const server = new ApolloServer({
-    typeDefs: [workOrderTypeDefs, userTypeDefs, commBoardTypeDefs, marketPlaceTypeDefs],
-    resolvers: [workOrderResolvers, userResolvers, commBoardResolvers, marketPlaceResolvers],
+    // typeDefs: [workOrderTypeDefs, userTypeDefs, commBoardTypeDefs, marketPlaceTypeDefs],
+    // resolvers: [workOrderResolvers, userResolvers, commBoardResolvers, marketPlaceResolvers],
+    typeDefs: [marketPlaceTypeDefs, userTypeDefs],
+    resolvers: [marketPlaceResolvers, userResolvers],
     context: ({ req }) => {
       // To find out the correct arguments for a specific integration,
       // see https://www.apollographql.com/docs/apollo-server/api/apollo-server/#middleware-specific-context-fields
