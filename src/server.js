@@ -22,7 +22,7 @@ const startServer = async () => {
   app.use(express.static("uploads"));
 
   // app.use((req, res, next) => {
-  //   console.log(req.headers);
+  //   console.log("req.headers: " + req.headers);
   //   console.log(req.body);
   //   next();
   // });
@@ -60,11 +60,7 @@ const startServer = async () => {
   await server.start();
   server.applyMiddleware({ app });
   const PORT = process.env.PORT || 2009;
-  app.listen(PORT, () => {
-    console.log(
-      `Server is running at http://localhost:${PORT}${server.graphqlPath}`
-    );
-  });
+  app.listen(PORT);
 };
 
 startServer();

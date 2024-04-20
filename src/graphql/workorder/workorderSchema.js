@@ -45,6 +45,10 @@ export const workOrderTypeDefs = gql`
     workOrder(uuid: String!): DetailedWorkOrder
   }
 
+  type CancelWorkOrderOutPut{
+    uuid: String!
+  }
+
   type Mutation {
     createWorkOrder(
       workType: String,
@@ -82,6 +86,6 @@ export const workOrderTypeDefs = gql`
 
     cancelWorkOrder(
       uuid: String!
-    ): String
+    ): CancelWorkOrderOutPut
   }
 `;
