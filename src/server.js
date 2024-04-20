@@ -37,10 +37,8 @@ const startServer = async () => {
   });
 
   const server = new ApolloServer({
-    // typeDefs: [workOrderTypeDefs, userTypeDefs, commBoardTypeDefs, marketPlaceTypeDefs],
-    // resolvers: [workOrderResolvers, userResolvers, commBoardResolvers, marketPlaceResolvers],
-    typeDefs: [marketPlaceTypeDefs, userTypeDefs],
-    resolvers: [marketPlaceResolvers, userResolvers],
+    typeDefs: [workOrderTypeDefs, userTypeDefs, commBoardTypeDefs, marketPlaceTypeDefs],
+    resolvers: [workOrderResolvers, userResolvers, commBoardResolvers, marketPlaceResolvers],
     context: ({ req }) => {
       // To find out the correct arguments for a specific integration,
       // see https://www.apollographql.com/docs/apollo-server/api/apollo-server/#middleware-specific-context-fields
