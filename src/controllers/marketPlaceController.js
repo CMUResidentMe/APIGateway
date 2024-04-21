@@ -71,6 +71,35 @@ class MarketPlaceController {
         return data.getGoodsById;
     }
 
+    async getSoldOrdersByUser(publishUser) {
+        const query = gql`
+      query getSoldOrdersByUser($publishUser: String!) {
+        getSoldOrdersByUser(publishUser: $publishUser) {
+          id
+          goods {
+                id
+                title
+                description
+                price
+                image
+                category
+                tradePlace
+                publishUser
+                contact
+                status
+                createdAt
+          }
+          buyer
+          contact
+          tradePlace
+        }
+      }
+        `;
+        const variables = { publishUser };
+        const data = await this.graphqlClient.request(query, variables);
+        return data.getSoldOrdersByUser;
+    }
+
     async getOrdersByUser(userId) {
         const query = gql`
       query getOrdersByUser($userId: ID!) {
@@ -91,6 +120,7 @@ class MarketPlaceController {
           }
           buyer
           contact
+          tradePlace
         }
       }
     `;
@@ -115,6 +145,17 @@ class MarketPlaceController {
         return data.addGoods;
     }
 
+    async deleteGoods(id, userId) {
+        const mutation = gql`
+      mutation deleteGoods($id: ID!, $userId: String!) {
+        deleteGoods(id: $id, userId: $userId)
+      }
+    `;
+        const variables = { id, userId };
+        const data = await this.graphqlClient.request(mutation, variables);
+        return data.deleteGoods;
+    }
+
     async updateGoods(id, title, description, price, image, category, tradePlace, contact, publishUser) {
         const mutation = gql`
       mutation updateGoods($id: ID! $title: String!, $description: String!, $price: Float!, $image: String, $category: String!, $tradePlace: String!, $contact: String!, $publishUser: String!) {
@@ -131,15 +172,15 @@ class MarketPlaceController {
         return data.addGoods;
     }
 
-    async buyGoods(goodsId, userId, contact) {
+    async buyGoods(goodsId, userId, contact, tradePlace) {
         const mutation = gql`
-      mutation buyGoods($goodsId: ID!, $userId: ID!, $contact: String!) {
-        buyGoods(goodsId: $goodsId, userId: $userId, contact: $contact) {
+      mutation buyGoods($goodsId: ID!, $userId: ID!, $contact: String!, $tradePlace: String!) {
+        buyGoods(goodsId: $goodsId, userId: $userId, contact: $contact, tradePlace: $tradePlace) {
           id
         }
       }
     `;
-        const variables = { goodsId, userId, contact };
+        const variables = { goodsId, userId, contact, tradePlace };
         const data = await this.graphqlClient.request(mutation, variables);
         return data.buyGoods;
     }
