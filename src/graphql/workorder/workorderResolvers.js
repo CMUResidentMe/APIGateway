@@ -43,7 +43,6 @@ export const workOrderResolvers = {
       return await workOrderController.unassignWorkOrderStaff(args);
     },
     cancelWorkOrder: async (parent, args, context, info) => {
-      const user = context.user;
       return await workOrderController.cancelWorkOrder(args);
     },
   },
