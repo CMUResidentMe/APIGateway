@@ -71,6 +71,7 @@ class RoomBookingController {
           name
           room_type
           bookedTimes {
+            id
             date
             startTime
             endTime

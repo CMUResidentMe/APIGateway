@@ -10,7 +10,6 @@ export const roomBookingTypeDefs = gql`
     user_name: String!
     is_confirmed: Boolean!
   }
-
   type Room {
     id: ID!
     name: String!

@@ -6,8 +6,8 @@ export const roomBookingResolvers = {
     allRooms: async (_, __, context) => {
       console.log("Fetching all rooms");
       // Fetching user details from the context, assuming it includes the user ID.
-      const user = await userService.getUserById(context.user);
-      console.log(`User fetched: ${user.username}`);
+      //   const user = await userService.getUserById(context.user);
+      //   console.log(`User fetched: ${user.username}`);
       return roomBookingController.getAllRooms();
     },
     roomsByType: async (_, { room_type }, context) => {
@@ -16,6 +16,8 @@ export const roomBookingResolvers = {
     },
     unconfirmedPartyRooms: async (_, __, context) => {
       console.log("Fetching unconfirmed party rooms");
+      const result = roomBookingController.getUnconfirmedPartyRooms();
+      console.log("API resolver result", result);
       return roomBookingController.getUnconfirmedPartyRooms();
     },
     bookingsByUser: async (_, __, context) => {
@@ -58,16 +60,15 @@ export const roomBookingResolvers = {
     },
     approveBooking: async (_, { booking_id }, context) => {
       try {
-        const user = await userService.getUserById(context.user);
-        console.log(
-          `Approving booking for user: ${user.username} (ID: ${context.user})`
-        );
+        // const user = await userService.getUserById(context.user);
+        // console.log(
+        //   `Approving booking for user: ${user.username} (ID: ${context.user})`
+        // );
 
         // Perform the booking approval
         console.log("bookingID", booking_id);
         const booking = await roomBookingController.approveBooking({
           booking_id,
-          user_id: context.user,
         });
         // Check if the booking or associated room is null after approval
         console.log("BOOKING", booking);
@@ -84,14 +85,13 @@ export const roomBookingResolvers = {
     },
     declineBooking: async (_, { booking_id }, context) => {
       try {
-        const user = await userService.getUserById(context.user);
-        console.log(
-          `Declining booking for user: ${user.username} (ID: ${context.user})`
-        );
+        // const user = await userService.getUserById(context.user);
+        // console.log(
+        //   `Declining booking for user: ${user.username} (ID: ${context.user})`
+        // );
 
         const booking = await roomBookingController.declineBooking({
           booking_id,
-          user_id: context.user,
         });
 
         if (!booking) {
