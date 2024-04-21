@@ -15,6 +15,8 @@ import { marketPlaceResolvers } from "./graphql/marketPlace/marketPlaceResolvers
 import { userTypeDefs } from "./graphql/userServiceSchema.js";
 import { userResolvers } from "./graphql/userServiceResolvers.js";
 import { getMulter } from "./controllers/workorder/workOrderFileUpload.js";
+import { roomBookingTypeDefs } from "./graphql/roomBook/roomBookingTypeDefs.js";
+import { roomBookingResolvers } from "./graphql/roomBook/roomBookResolvers.js";
 
 const startServer = async () => {
   const app = express();
@@ -37,8 +39,20 @@ const startServer = async () => {
   });
 
   const server = new ApolloServer({
-    typeDefs: [workOrderTypeDefs, userTypeDefs, commBoardTypeDefs, marketPlaceTypeDefs],
-    resolvers: [workOrderResolvers, userResolvers, commBoardResolvers, marketPlaceResolvers],
+    typeDefs: [
+      workOrderTypeDefs,
+      userTypeDefs,
+      commBoardTypeDefs,
+      roomBookingTypeDefs,
+      marketPlaceTypeDefs,
+    ],
+    resolvers: [
+      workOrderResolvers,
+      userResolvers,
+      commBoardResolvers,
+      roomBookingResolvers,
+      marketPlaceResolvers,                 
+    ],
     context: ({ req }) => {
       // To find out the correct arguments for a specific integration,
       // see https://www.apollographql.com/docs/apollo-server/api/apollo-server/#middleware-specific-context-fields
