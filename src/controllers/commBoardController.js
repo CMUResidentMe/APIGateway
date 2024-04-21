@@ -103,10 +103,12 @@ class CommBoardController {
           content
           userId
           userName
+          createdAt
         }
       }
     `;
     const variables = { title, content, userId, userName };
+    console.log("variables: ", variables);
     const data = await this.graphqlClient.request(mutation, variables);
     return data.createThread;
   }
@@ -140,6 +142,7 @@ class CommBoardController {
           content
           userId
           userName
+          createdAt
         }
       }
     `;
@@ -177,6 +180,7 @@ class CommBoardController {
           content
           userId
           userName
+          createdAt
         }
       }
     `;
