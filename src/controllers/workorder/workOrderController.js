@@ -2,11 +2,50 @@ import dotenv from 'dotenv';
 dotenv.config();
 import { request, gql, GraphQLClient } from 'graphql-request';
 
+const queryUser = gql`
+      query getUserById($id: ID!){
+        getUserById(id: $id) {
+          username
+          firstName
+          lastName
+          roomNumber
+        }
+      }`;
+
 class WorkOrderController {
 
   constructor() {
     this.client = new GraphQLClient(process.env.WORKORDER_CLIENT_URI, { method: 'POST' });
     console.log('WorkOrder Service Client Initialized with URI:', process.env.WORKORDER_CLIENT_URI);
+    this.clientUser = new GraphQLClient(process.env.USER_SERVICE_URL, { method: 'POST' });
+  }
+
+  async getUser(id){
+    let variables = { 'id': id };
+    let data = await this.clientUser.request(queryUser, variables);
+    if(data !== null && data !== undefined){
+      return {
+        username: data.getUserById.username,
+        firstName: data.getUserById.firstName,
+        lastName: data.getUserById.lastName,
+        roomNumber: data.getUserById.roomNumber,
+      }
+    } else{
+      return undefined;
+    }
+    
+  }
+
+  async enrichUsres(workOrders) {
+    let res = []
+    for (let wk of workOrders) {
+      wk.ownerInfo = await this.getUser(wk.owner);
+      if (wk.assignedStaff !== null && wk.assignedStaff !== undefined) {
+        wk.staffInfo = await this.getUser(wk.assignedStaff);
+      }
+      res.push(wk);
+    }
+    return res;
   }
 
   // Query
@@ -30,8 +69,8 @@ class WorkOrderController {
         }
       }`;
     try {
-      let data = await this.client.request(query);
-      return data.workOrders;
+      let data = await this.client.request(query).workOrders;
+      return this.enrichUsres(data.workOrders);
     } catch (error) {
       console.error("Error retrieving work orders:", error);
       throw new Error("Failed to retrieve work orders.");
@@ -60,42 +99,14 @@ class WorkOrderController {
     try {
       let variables = { 'ownerUuid': user };
       let data = await this.client.request(query, variables);
-      return data.workOrdersByOwner;
+      return this.enrichUsres(data.workOrdersByOwner);
     } catch (error) {
       console.error("Error retrieving work orders by owner:", error);
       throw new Error("Failed to retrieve work orders by owner.");
     }
   }
 
-  async findAllUnAssignedWorkOrders() {
-    const query = gql`
-    query {
-      workOrdersUnassigned {
-        uuid
-        semanticId
-        owner
-        workType
-        priority
-        detail
-        status
-        accessInstruction
-        preferredTime
-        entryPermission
-        images
-        assignedStaff
-        createTime
-      }
-    }`;
-    try {
-      let data = await this.client.request(query);
-      return data.workOrdersUnassigned;
-    } catch (error) {
-      console.error("Error retrieving unassigned work orders:", error);
-      throw new Error("Failed to retrieve unassigned work orders.");
-    }
-  }
-  
-    async findWorkOrdersByAssignedStaff(workOrderDetails, user) {
+  async findWorkOrdersByAssignedStaff(workOrderDetails, user) {
     const query = gql`
     query workOrdersByAssignedStaff($assignedStaffUuid: String!) {
       workOrdersByAssignedStaff(assignedStaffUuid: $assignedStaffUuid) {
@@ -117,7 +128,7 @@ class WorkOrderController {
     try {
       let variables = { 'assignedStaffUuid': user };
       let data = await this.client.request(query, variables);
-      return data.workOrdersByAssignedStaff;
+      return this.enrichUsres(data.workOrdersByAssignedStaff);
     } catch (error) {
       console.error("Error retrieving work orders by assigned staff:", error);
       throw new Error("Failed to retrieve work orders by assigned staff.");
@@ -145,7 +156,7 @@ class WorkOrderController {
     }`;
     try {
       let data = await this.client.request(query, workOrderDetails);
-      return data.workOrdersByStatus;
+      return this.enrichUsres(data.workOrdersByStatus);
     } catch (error) {
       console.error("Error retrieving work orders by status:", error);
       throw new Error("Failed to retrieve work orders by status.");
@@ -358,7 +369,6 @@ class WorkOrderController {
       throw new Error("Failed to cancel work order.");
     }
   }
-
 
 }
 

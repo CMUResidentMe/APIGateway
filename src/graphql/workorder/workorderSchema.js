@@ -20,10 +20,18 @@ export const workOrderTypeDefs = gql`
     Low
   }
 
+  type User {
+    username: String!
+    firstName: String
+    lastName: String
+    roomNumber: Int
+  }
+
   type DetailedWorkOrder {
     uuid: String!
     semanticId: String!
     owner: String!
+    ownerInfo: User
     workType: String
     priority: Priority
     detail: String
@@ -33,6 +41,7 @@ export const workOrderTypeDefs = gql`
     entryPermission: EntryPermission
     images: [String!]
     assignedStaff: String
+    staffInfo: User
     createTime: String
   }
 
@@ -43,6 +52,10 @@ export const workOrderTypeDefs = gql`
     workOrdersByAssignedStaff: [DetailedWorkOrder!]
     workOrdersByStatus(status: WorkStatus!): [DetailedWorkOrder!]
     workOrder(uuid: String!): DetailedWorkOrder
+  }
+
+  type CancelWorkOrderOutPut{
+    uuid: String!
   }
 
   type Mutation {
@@ -82,6 +95,6 @@ export const workOrderTypeDefs = gql`
 
     cancelWorkOrder(
       uuid: String!
-    ): String
+    ): CancelWorkOrderOutPut
   }
 `;

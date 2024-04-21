@@ -10,6 +10,8 @@ import { workOrderTypeDefs } from "./graphql/workorder/workorderSchema.js";
 import { workOrderResolvers } from "./graphql/workorder/workorderResolvers.js";
 import { commBoardTypeDefs } from "./graphql/commBoard/commBoardSchema.js";
 import { commBoardResolvers } from "./graphql/commBoard/commBoardResolvers.js";
+import { marketPlaceTypeDefs } from "./graphql/marketPlace/marketPlaceSchema.js";
+import { marketPlaceResolvers } from "./graphql/marketPlace/marketPlaceResolvers.js";
 import { userTypeDefs } from "./graphql/userServiceSchema.js";
 import { userResolvers } from "./graphql/userServiceResolvers.js";
 import { getMulter } from "./controllers/workorder/workOrderFileUpload.js";
@@ -19,12 +21,14 @@ import { roomBookingResolvers } from "./graphql/roomBook/roomBookResolvers.js";
 const startServer = async () => {
   const app = express();
   app.use(cors());
-  app.use(express.json());
+  app.use(express.json({
+    limit: "50mb",
+  }));
   app.use(morgan.default("dev"));
   app.use(express.static("uploads"));
 
   // app.use((req, res, next) => {
-  //   console.log(req.headers);
+  //   console.log("req.headers: " + req.headers);
   //   console.log(req.body);
   //   next();
   // });
@@ -40,12 +44,14 @@ const startServer = async () => {
       userTypeDefs,
       commBoardTypeDefs,
       roomBookingTypeDefs,
+      marketPlaceTypeDefs,
     ],
     resolvers: [
       workOrderResolvers,
       userResolvers,
       commBoardResolvers,
       roomBookingResolvers,
+      marketPlaceResolvers,                 
     ],
     context: ({ req }) => {
       // To find out the correct arguments for a specific integration,
@@ -72,11 +78,7 @@ const startServer = async () => {
   await server.start();
   server.applyMiddleware({ app });
   const PORT = process.env.PORT || 2009;
-  app.listen(PORT, () => {
-    console.log(
-      `Server is running at http://localhost:${PORT}${server.graphqlPath}`
-    );
-  });
+  app.listen(PORT);
 };
 
 startServer();

@@ -11,31 +11,21 @@ class CommBoardController {
     );
   }
 
-  async getThreads() {
+  async getThreads(pageNum, pageSize) {
     const query = gql`
-      query {
-        threads {
+      query GetThreads($pageNum: Int!, $pageSize: Int!) {
+        threads(pageNum: $pageNum, pageSize: $pageSize) {
           id
           title
           content
           userId
           userName
-          posts {
-            id
-            content
-            userId
-            userName
-            replies {
-              id
-              content
-              userId
-              userName
-            }
-          }
+          createdAt
         }
       }
     `;
-    const data = await this.graphqlClient.request(query);
+    const variables = { pageNum, pageSize };
+    const data = await this.graphqlClient.request(query, variables);
     return data.threads;
   }
 
@@ -48,24 +38,50 @@ class CommBoardController {
           content
           userId
           userName
-          posts {
-            id
-            content
-            userId
-            userName
-            replies {
-              id
-              content
-              userId
-              userName
-            }
-          }
         }
       }
     `;
     const variables = { id };
     const data = await this.graphqlClient.request(query, variables);
     return data.thread;
+  }
+
+  async getPostsByThread(threadId, pageNum, pageSize) {
+    const query = gql`
+      query GetPostsByThread($threadId: ID!, $pageNum: Int!, $pageSize: Int!) {
+        postsByThread(
+          threadId: $threadId
+          pageNum: $pageNum
+          pageSize: $pageSize
+        ) {
+          id
+          content
+          userId
+          userName
+          createdAt
+        }
+      }
+    `;
+    const variables = { threadId, pageNum, pageSize };
+    const data = await this.graphqlClient.request(query, variables);
+    return data.postsByThread;
+  }
+
+  async getRepliesByPost(postId, pageNum, pageSize) {
+    const query = gql`
+      query GetRepliesByPost($postId: ID!, $pageNum: Int!, $pageSize: Int!) {
+        repliesByPost(postId: $postId, pageNum: $pageNum, pageSize: $pageSize) {
+          id
+          content
+          userId
+          userName
+          createdAt
+        }
+      }
+    `;
+    const variables = { postId, pageNum, pageSize };
+    const data = await this.graphqlClient.request(query, variables);
+    return data.repliesByPost;
   }
 
   async createThread(title, content, userId, userName) {

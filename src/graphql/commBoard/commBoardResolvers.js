@@ -3,11 +3,25 @@ import { userService } from "../../utils/UserService.js";
 
 export const commBoardResolvers = {
   Query: {
-    threads: async (_, args, context) => {
-      return await commBoardController.getThreads();
+    threads: async (_, { pageNum, pageSize }) => {
+      return await commBoardController.getThreads(pageNum, pageSize);
     },
-    thread: async (_, { id }, context) => {
+    thread: async (_, { id }) => {
       return await commBoardController.getThread(id);
+    },
+    postsByThread: async (_, { threadId, pageNum, pageSize }) => {
+      return await commBoardController.getPostsByThread(
+        threadId,
+        pageNum,
+        pageSize
+      );
+    },
+    repliesByPost: async (_, { postId, pageNum, pageSize }) => {
+      return await commBoardController.getRepliesByPost(
+        postId,
+        pageNum,
+        pageSize
+      );
     },
   },
   Mutation: {
