@@ -37,6 +37,32 @@ class RoomBookingController {
       throw new Error("Failed to fetch all rooms.");
     }
   }
+  async getBookingsByUser(user_id) {
+    const query = gql`
+      query GetBookingsByUser($user_id: String!) {
+        bookingsByUser(user_id: $user_id) {
+          date
+          startTime
+          endTime
+          user_name
+          user_id
+          is_confirmed
+          room_id
+          booking_id
+          room_name
+        }
+      }
+    `;
+    const variables = { user_id };
+    try {
+      const result = await this.graphqlClient.request(query, variables);
+      console.log("Fetched bookings for user:", result);
+      return result.bookingsByUser;
+    } catch (error) {
+      console.error("Error fetching bookings by user:", error);
+      throw new Error("Failed to fetch bookings for user.");
+    }
+  }
   async getUnconfirmedPartyRooms() {
     const query = gql`
       query GetUnconfirmedPartyRooms {
@@ -45,6 +71,7 @@ class RoomBookingController {
           name
           room_type
           bookedTimes {
+            id
             date
             startTime
             endTime
@@ -84,9 +111,11 @@ class RoomBookingController {
       }
     `;
     const variables = { room_type };
-
+    console.log("variables", variables);
     try {
       const result = await this.graphqlClient.request(query, variables);
+      console.log("get rom result", result);
+      console.log("get rom result rooms by type", result.roomsByType);
       return result.roomsByType.map((room) => ({
         ...room,
         availableTimes: this.calculateAvailableTimes(room.bookedTimes),
