@@ -18,6 +18,11 @@ export const roomBookingResolvers = {
       console.log("Fetching unconfirmed party rooms");
       return roomBookingController.getUnconfirmedPartyRooms();
     },
+    bookingsByUser: async (_, __, context) => {
+      console.log("Fetching bookings for user", context.user);
+      const user = await userService.getUserById(context.user);
+      return roomBookingController.getBookingsByUser(context.user);
+    },
   },
   Mutation: {
     createBooking: async (
