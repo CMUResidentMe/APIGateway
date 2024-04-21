@@ -20,6 +20,7 @@ export const marketPlaceTypeDefs = gql`
     goods: SecondHandGoods!
     buyer: String!
     contact: String!
+    tradePlace: String!
   }
 
   type Query {
@@ -28,12 +29,13 @@ export const marketPlaceTypeDefs = gql`
     getGoodsById(id: ID!): SecondHandGoods
     getOrdersByUser: [SecondHandGoodsOrder]
     isGoodsOwner(goodsId: ID!): Boolean
+    getSoldOrdersByUser: [SecondHandGoodsOrder]
   }
 
   type Mutation {
     addGoods(title: String!, description: String!, price: Float!, image: String, category: String!, tradePlace: String!, contact: String!): SecondHandGoods
     updateGoods(id: ID!, title: String, description: String, price: Float, image: String, category: String, tradePlace: String, contact: String): SecondHandGoods
-    deleteGoods(id: ID!, userId: String!): String
-    buyGoods(goodsId: ID!, contact: String!): SecondHandGoodsOrder
+    deleteGoods(id: ID!): String
+    buyGoods(goodsId: ID!, contact: String!, tradePlace: String!): SecondHandGoodsOrder
   }
 `;
