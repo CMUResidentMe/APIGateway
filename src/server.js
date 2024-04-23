@@ -21,9 +21,11 @@ import { roomBookingResolvers } from "./graphql/roomBook/roomBookResolvers.js";
 const startServer = async () => {
   const app = express();
   app.use(cors());
-  app.use(express.json({
-    limit: "50mb",
-  }));
+  app.use(
+    express.json({
+      limit: "50mb",
+    })
+  );
   app.use(morgan.default("dev"));
   app.use(express.static("uploads"));
 
@@ -51,25 +53,30 @@ const startServer = async () => {
       userResolvers,
       commBoardResolvers,
       roomBookingResolvers,
-      marketPlaceResolvers,                 
+      marketPlaceResolvers,
     ],
     context: ({ req }) => {
       // To find out the correct arguments for a specific integration,
       // see https://www.apollographql.com/docs/apollo-server/api/apollo-server/#middleware-specific-context-fields
       // Get the user token from the headers.
       //console.log(req.body.operationName);
-      if (
-        req.body.operationName !== "Register" &&
-        req.body.operationName !== "register" &&
-        req.body.operationName !== "Login" &&
-        req.body.operationName !== "login"
-      ) {
+      const nonAuthOperations = ["Register", "register", "Login", "login"];
+      if (!nonAuthOperations.includes(req.body.operationName)) {
+        const token = req.headers.authorization || "";
+
+        if (!token) {
+          console.log("No token found");
+          throw new AuthenticationError(
+            "Authorization header must be provided"
+          );
+        }
+
         try {
-          const token = req.headers.authorization;
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
-          return { user: decoded.id };
+          return { user: decoded.id }; // Assuming 'id' is encoded in JWT
         } catch (err) {
-          console.error("Error: error token ", err);
+          console.log("Error in token verification: ", err);
+          throw new AuthenticationError("Invalid or expired token");
         }
       }
     },

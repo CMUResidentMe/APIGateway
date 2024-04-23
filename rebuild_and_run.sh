@@ -7,7 +7,7 @@ IMAGE_NAME="apigateway"
 CONTAINER_NAME="apigateway"
 
 # Port mapping (host:container)
-PORT_MAPPING="8000:2009"
+PORT_MAPPING="8000:8000"
 
 # Path to .env file
 ENV_FILE_PATH="./.env"
