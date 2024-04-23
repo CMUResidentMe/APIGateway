@@ -10,6 +10,7 @@ class RoomBookingController {
       process.env.ROOM_BOOKING_SERVICE_URL
     );
   }
+  // queries and mutations
   async getAllRooms() {
     const query = gql`
       query GetAllRooms {
@@ -125,6 +126,7 @@ class RoomBookingController {
       throw new Error(`Failed to fetch rooms of type ${room_type}.`);
     }
   }
+  // Helper function to calculate available timeslots
   calculateAvailableTimes(bookedTimes) {
     const dayStart = "09:00";
     const dayEnd = "17:00";

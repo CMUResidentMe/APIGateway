@@ -11,6 +11,7 @@ class CommBoardController {
     );
   }
 
+  // Controller methods for querying the communication board service and returning the data
   async getThreads(pageNum, pageSize) {
     const query = gql`
       query GetThreads($pageNum: Int!, $pageSize: Int!) {

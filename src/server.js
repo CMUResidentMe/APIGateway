@@ -61,9 +61,11 @@ const startServer = async () => {
       // Get the user token from the headers.
       //console.log(req.body.operationName);
       const nonAuthOperations = ["Register", "register", "Login", "login"];
+      // Check if the operation is a non-auth operation
       if (!nonAuthOperations.includes(req.body.operationName)) {
         const token = req.headers.authorization || "";
 
+        // If no token is found, throw an error
         if (!token) {
           console.log("No token found");
           throw new AuthenticationError(
@@ -71,10 +73,12 @@ const startServer = async () => {
           );
         }
 
+        // Verify the token
         try {
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
-          return { user: decoded.id }; // Assuming 'id' is encoded in JWT
+          return { user: decoded.id };
         } catch (err) {
+          // If the token is not valid, throw an error
           console.log("Error in token verification: ", err);
           throw new AuthenticationError("Invalid or expired token");
         }

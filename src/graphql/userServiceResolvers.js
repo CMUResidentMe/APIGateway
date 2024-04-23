@@ -36,6 +36,7 @@ export const userResolvers = {
     _empty: () => "",
   },
   Mutation: {
+    // The register resolver
     register: async (
       _,
       { username, password, firstName, lastName, roomNumber, privilege }
@@ -62,6 +63,7 @@ export const userResolvers = {
         throw new ApolloError(errorMessage, "REGISTRATION_FAILED");
       }
     },
+    // The login resolver
     login: async (_, { username, password }) => {
       try {
         const data = await request(
