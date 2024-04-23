@@ -1,5 +1,6 @@
 import { GraphQLClient, gql } from "graphql-request";
 
+// UserService class
 class UserService {
   constructor() {
     this.graphqlClient = new GraphQLClient(process.env.USER_SERVICE_URL);
@@ -9,6 +10,7 @@ class UserService {
     );
   }
 
+  // getUserById method
   async getUserById(userId) {
     const query = gql`
       query getUserById($id: ID!) {

@@ -1,6 +1,7 @@
 import { workOrderController } from "../../controllers/workorder/workOrderController.js";
 
 export const workOrderResolvers = {
+  // Query resolvers
   Query: {
     workOrders: async (parent, args, context, info) => {
       return await workOrderController.findAllWorkOrders();
@@ -14,7 +15,10 @@ export const workOrderResolvers = {
     },
     workOrdersByAssignedStaff: async (parent, args, context, info) => {
       const user = context.user;
-      return await workOrderController.findWorkOrdersByAssignedStaff(args, user);
+      return await workOrderController.findWorkOrdersByAssignedStaff(
+        args,
+        user
+      );
     },
     workOrdersByStatus: async (parent, args, context, info) => {
       return await workOrderController.findWorkOrdersByStatus(args);
@@ -23,7 +27,8 @@ export const workOrderResolvers = {
       return await workOrderController.findOneWorkOrder(args);
     },
   },
-  
+
+  // Mutation resolvers
   Mutation: {
     createWorkOrder: async (parent, args, context, info) => {
       const user = context.user;

@@ -2,6 +2,7 @@ import { userService } from "../../utils/UserService.js";
 import { roomBookingController } from "../../controllers/roomBookController.js";
 
 export const roomBookingResolvers = {
+  // Query resolvers
   Query: {
     allRooms: async (_, __, context) => {
       console.log("Fetching all rooms");
@@ -26,6 +27,8 @@ export const roomBookingResolvers = {
       return roomBookingController.getBookingsByUser(context.user);
     },
   },
+  // Mutation resolvers
+  // The user object is retrieved from querying the user service using the user ID from the context.
   Mutation: {
     createBooking: async (
       _,

@@ -2,6 +2,7 @@ import { commBoardController } from "../../controllers/commBoardController.js";
 import { userService } from "../../utils/UserService.js";
 
 export const commBoardResolvers = {
+  // Query resolvers
   Query: {
     threads: async (_, { pageNum, pageSize }) => {
       return await commBoardController.getThreads(pageNum, pageSize);
@@ -24,6 +25,8 @@ export const commBoardResolvers = {
       );
     },
   },
+  // Mutation resolvers
+  // The user object is retrieved from querying the user service using the user ID from the context.
   Mutation: {
     createThread: async (_, { title, content }, context) => {
       const userId = context.user;
