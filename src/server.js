@@ -42,17 +42,17 @@ const startServer = async () => {
 
   const server = new ApolloServer({
     typeDefs: [
-      // workOrderTypeDefs,
+      workOrderTypeDefs,
       userTypeDefs,
-      // commBoardTypeDefs,
-      // roomBookingTypeDefs,
+      commBoardTypeDefs,
+      roomBookingTypeDefs,
       marketPlaceTypeDefs,
     ],
     resolvers: [
-      // workOrderResolvers,
+      workOrderResolvers,
       userResolvers,
-      // commBoardResolvers,
-      // roomBookingResolvers,
+      commBoardResolvers,
+      roomBookingResolvers,
       marketPlaceResolvers,
     ],
     context: ({ req }) => {
