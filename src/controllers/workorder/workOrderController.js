@@ -156,7 +156,8 @@ class WorkOrderController {
     }`;
     try {
       let data = await this.client.request(query, workOrderDetails);
-      return this.enrichUsres(data.workOrdersByStatus);
+      let details = await this.enrichUsres(data.workOrdersByStatus);
+      return details;
     } catch (error) {
       console.error("Error retrieving work orders by status:", error);
       throw new Error("Failed to retrieve work orders by status.");
