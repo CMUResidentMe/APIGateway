@@ -3,6 +3,8 @@ FROM node:20
 
 WORKDIR /usr/src/application
 
+VOLUME uploads
+
 COPY package*.json ./
 
 RUN npm install
