@@ -11,6 +11,7 @@ class RoomBookingController {
     );
   }
   // queries and mutations
+  // get all the rooms
   async getAllRooms() {
     const query = gql`
       query GetAllRooms {
@@ -38,6 +39,7 @@ class RoomBookingController {
       throw new Error("Failed to fetch all rooms.");
     }
   }
+  // get a user's all bookings
   async getBookingsByUser(user_id) {
     const query = gql`
       query GetBookingsByUser($user_id: String!) {
@@ -64,6 +66,7 @@ class RoomBookingController {
       throw new Error("Failed to fetch bookings for user.");
     }
   }
+  // get all the  rooms that is not confirmed by manager yet
   async getUnconfirmedPartyRooms() {
     const query = gql`
       query GetUnconfirmedPartyRooms {
@@ -92,7 +95,7 @@ class RoomBookingController {
       throw new Error("Failed to fetch unconfirmed party rooms.");
     }
   }
-
+  // get all the rooms of a type
   async getRoomsByType(room_type) {
     const query = gql`
       query GetRoomsByType($room_type: String!) {
@@ -126,7 +129,7 @@ class RoomBookingController {
       throw new Error(`Failed to fetch rooms of type ${room_type}.`);
     }
   }
-  // Helper function to calculate available timeslots
+  // Helper function to calculate available timeslots of a room, easier for calendar vie
   calculateAvailableTimes(bookedTimes) {
     const dayStart = "09:00";
     const dayEnd = "17:00";
@@ -161,7 +164,7 @@ class RoomBookingController {
       endTime: this.minutesToTime(time.end),
     }));
   }
-
+  // getting time to minutes
   timeToMinutes(time) {
     const [hours, minutes] = time.split(":").map(Number);
     return hours * 60 + minutes;
@@ -174,7 +177,7 @@ class RoomBookingController {
       .toString()
       .padStart(2, "0")}`;
   }
-
+  // user create booking
   async createBooking({
     room_id,
     user_id,
@@ -245,6 +248,7 @@ class RoomBookingController {
     }
   }
 
+  // user cancel a booking
   async cancelBooking({ room_id, booking_id, user_id }) {
     const mutation = gql`
       mutation CancelBooking(
@@ -280,7 +284,7 @@ class RoomBookingController {
       throw new Error("Failed to cancel booking.");
     }
   }
-
+  // manager approve a booking
   async approveBooking({ booking_id }) {
     const mutation = gql`
       mutation ApproveBooking($booking_id: ID!) {
@@ -303,7 +307,7 @@ class RoomBookingController {
       throw new Error("Failed to approve booking.");
     }
   }
-
+  // let manager decline a booking
   async declineBooking({ booking_id }) {
     const mutation = gql`
       mutation DeclineBooking($booking_id: ID!) {
@@ -326,6 +330,7 @@ class RoomBookingController {
       throw new Error("Failed to decline booking.");
     }
   }
+  // let manager create a room
   async createRoom({ name, room_type }) {
     const mutation = gql`
       mutation CreateRoom($name: String!, $room_type: String!) {
@@ -352,7 +357,7 @@ class RoomBookingController {
       throw new Error("Failed to create room.");
     }
   }
-
+  // let manager delete a room
   async deleteRoom({ room_id }) {
     const mutation = gql`
       mutation DeleteRoom($room_id: ID!) {
