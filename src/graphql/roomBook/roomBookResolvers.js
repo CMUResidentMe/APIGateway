@@ -4,23 +4,24 @@ import { roomBookingController } from "../../controllers/roomBookController.js";
 export const roomBookingResolvers = {
   // Query resolvers
   Query: {
+    // get all the rooms with its bookings
     allRooms: async (_, __, context) => {
       console.log("Fetching all rooms");
-      // Fetching user details from the context, assuming it includes the user ID.
-      //   const user = await userService.getUserById(context.user);
-      //   console.log(`User fetched: ${user.username}`);
       return roomBookingController.getAllRooms();
     },
+    // getting all the rooms by its type
     roomsByType: async (_, { room_type }, context) => {
       console.log(`Fetching rooms by type: ${room_type}`);
       return roomBookingController.getRoomsByType(room_type);
     },
+    // getting all the unconfirmed party rooms
     unconfirmedPartyRooms: async (_, __, context) => {
       console.log("Fetching unconfirmed party rooms");
       const result = roomBookingController.getUnconfirmedPartyRooms();
       console.log("API resolver result", result);
       return roomBookingController.getUnconfirmedPartyRooms();
     },
+    // getting all the bookings by a user
     bookingsByUser: async (_, __, context) => {
       console.log("Fetching bookings for user", context.user);
       const user = await userService.getUserById(context.user);
@@ -30,6 +31,7 @@ export const roomBookingResolvers = {
   // Mutation resolvers
   // The user object is retrieved from querying the user service using the user ID from the context.
   Mutation: {
+    // let user create a booking
     createBooking: async (
       _,
       { room_id, user_id, user_name, date, start_time, end_time },
@@ -40,16 +42,16 @@ export const roomBookingResolvers = {
       console.log(
         `Creating booking for user: ${user.username} (ID: ${context.user})`
       );
-      // Additional user_name passed to the controller if necessary
       return roomBookingController.createBooking({
         room_id,
         user_id: context.user, // user_id from context or from the args directly
-        user_name: user.username, // Ensuring username is passed if required
+        user_name: user.username,
         date,
         start_time,
         end_time,
       });
     },
+    // let a user cancel their booking
     cancelBooking: async (_, { room_id, booking_id }, context) => {
       const user = await userService.getUserById(context.user);
       console.log(
@@ -61,6 +63,7 @@ export const roomBookingResolvers = {
         user_id: context.user,
       });
     },
+    // let a manager approve a booking
     approveBooking: async (_, { booking_id }, context) => {
       try {
         // const user = await userService.getUserById(context.user);
@@ -86,6 +89,7 @@ export const roomBookingResolvers = {
         );
       }
     },
+    // let a manager decline a booking
     declineBooking: async (_, { booking_id }, context) => {
       try {
         // const user = await userService.getUserById(context.user);
@@ -109,10 +113,12 @@ export const roomBookingResolvers = {
         );
       }
     },
+    // let a manager create a room
     createRoom: async (_, { name, room_type }, context) => {
       console.log(`Creating room with name: ${name} and type: ${room_type}`);
       return roomBookingController.createRoom({ name, room_type });
     },
+    // let a manager delete a room
     deleteRoom: async (_, { room_id }, context) => {
       const user = await userService.getUserById(context.user);
       console.log(
