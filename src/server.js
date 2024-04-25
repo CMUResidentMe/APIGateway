@@ -88,7 +88,7 @@ const startServer = async () => {
   // Make sure to start Apollo Server before applying middleware
   await server.start();
   server.applyMiddleware({ app });
-  const PORT = process.env.PORT || 2009;
+  const PORT = process.env.PORT || 8000;
   app.listen(PORT);
 };
 

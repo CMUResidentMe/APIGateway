@@ -214,7 +214,7 @@ class WorkOrderController {
       }`;
 
     try {
-      const PORT = process.env.PORT || 2009;
+      const PORT = process.env.PORT || 8000;
       let newImages = [];
       workOrderDetails.images.map(imagePath => {
         if (imagePath.startsWith("uploads")) {//uploads
@@ -257,6 +257,22 @@ class WorkOrderController {
         }
       }`;
     try {
+	  const PORT = process.env.PORT || 8000;
+    console.log("work order details1");
+    console.log(workOrderDetails);
+      let newImages = [];
+      workOrderDetails.images.map(imagePath => {
+        if (imagePath.startsWith("uploads")) {//uploads
+          let mewPath = imagePath.replaceAll("\\", "/");
+          mewPath = mewPath.replace("uploads/", "");
+          mewPath = `http://localhost:${PORT}/${mewPath}`;
+          newImages.push(mewPath);
+        } else {
+          newImages.push(imagePath);
+        }
+      });
+      workOrderDetails.images = newImages;
+      console.log(workOrderDetails);
       let data = await this.client.request(mutation, workOrderDetails);
       return data.changeWorkOrder;
     } catch (error) {
