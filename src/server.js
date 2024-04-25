@@ -68,9 +68,9 @@ const startServer = async () => {
         // If no token is found, throw an error
         if (!token) {
           console.log("No token found");
-          throw new AuthenticationError(
-            "Authorization header must be provided"
-          );
+          // throw new AuthenticationError(
+          //   "Authorization header must be provided"
+          // );
         }
 
         // Verify the token
@@ -80,7 +80,7 @@ const startServer = async () => {
         } catch (err) {
           // If the token is not valid, throw an error
           console.log("Error in token verification: ", err);
-          throw new AuthenticationError("Invalid or expired token");
+          // throw new AuthenticationError("Invalid or expired token");
         }
       }
     },
